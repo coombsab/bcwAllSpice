@@ -26,6 +26,15 @@ public class FavoritesRepository : RepositoryBase
     return _db.QueryFirstOrDefault<Favorite>(sql, favoriteData);
   }
 
+  public Favorite GetFavorite(int recipeId, string accountId) {
+    string sql = @"
+      SELECT * FROM favorites
+      WHERE accountId = @accountId AND recipeId = @recipeId;
+    ";
+
+    return _db.QueryFirstOrDefault<Favorite>(sql, new { accountId, recipeId });
+  }
+
   public Favorite CreateFavorite(Favorite favoriteData)
   {
     string sql =@"
@@ -37,6 +46,18 @@ public class FavoritesRepository : RepositoryBase
     favoriteData.Id = _db.ExecuteScalar<int>(sql, favoriteData);
 
     return favoriteData;
+  }
+
+  public Favorite CreateFavorite(int recipeId, string accountId) {
+    string sql =@"
+      INSERT INTO favorites(accountId, recipeId)
+      VALUES(@AccountId, @RecipeId);
+      SELECT LAST_INSERT_ID();
+    ";
+
+    int favoriteId = _db.ExecuteScalar<int>(sql, new { recipeId, accountId });
+    
+    return GetFavoriteById(favoriteId);
   }
 
   public List<FavRecipe> GetFavoritesByAccount(string accountId)
@@ -55,7 +76,6 @@ public class FavoritesRepository : RepositoryBase
 
     return _db.Query<FavRecipe, Profile, FavRecipe>(sql, (recipe, profile) => {
       recipe.Creator = profile;
-      recipe.AccountId = profile.Id;
       return recipe;
     }, new { accountId }).ToList();
   }
@@ -67,5 +87,10 @@ public class FavoritesRepository : RepositoryBase
     ";
 
     _db.Execute(sql, new { favoriteId });
+  }
+
+  public void ToggleLiked(int recipeId, string userId)
+  {
+    throw new NotImplementedException();
   }
 }

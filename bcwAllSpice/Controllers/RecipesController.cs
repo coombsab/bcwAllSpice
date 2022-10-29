@@ -8,12 +8,14 @@ public class RecipesController : ControllerBase
   private readonly Auth0Provider _auth0Provider;
   private readonly RecipesService _recipesService;
   private readonly IngredientsService _ingredientsService;
+  private readonly FavoritesService _favoritesService;
 
-  public RecipesController(Auth0Provider auth0Provider, RecipesService recipesService, IngredientsService ingredientsService)
+  public RecipesController(Auth0Provider auth0Provider, RecipesService recipesService, IngredientsService ingredientsService, FavoritesService favoritesService)
   {
     _auth0Provider = auth0Provider;
     _recipesService = recipesService;
     _ingredientsService = ingredientsService;
+    _favoritesService = favoritesService;
   }
 
   [HttpPost]
@@ -104,6 +106,19 @@ public class RecipesController : ControllerBase
     }
     catch (Exception e)
     {
+      return BadRequest(e.Message);
+    }
+  }
+
+  [HttpPut("{recipeId}/favorite")]
+  [Authorize]
+  public async Task<ActionResult<Recipe>> ToggleLiked(int recipeId) {
+    try {
+      Account userInfo = await _auth0Provider.GetUserInfoAsync<Account>(HttpContext);
+      Recipe recipe = _favoritesService.ToggleLiked(recipeId, userInfo.Id);
+      return Ok(recipe);
+    }
+    catch(Exception e) {
       return BadRequest(e.Message);
     }
   }

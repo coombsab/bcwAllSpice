@@ -23,10 +23,33 @@ public class RecipesRepository : RepositoryBase
     JOIN accounts acc ON acc.id = rec.creatorId;
     ";
     // TODO AsList?  Why will ToList not work?
-    return _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) => {
+    List<Recipe> recipes = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) => {
       recipe.Creator = profile;
       return recipe;
     }).ToList();
+
+    sql = @"
+      SELECT acc.* FROM favorites fav
+      JOIN accounts acc ON acc.id = fav.accountId
+      WHERE recipeId = @recipeId
+    ";
+
+    recipes.ForEach(recipe => {
+      int recipeId = recipe.Id;
+      recipe.Favoritees = _db.Query<Profile>(sql, new { recipeId }).ToList();
+    });
+
+    sql = @"
+      SELECT accountId FROM favorites
+      WHERE recipeId = @recipeId
+    ";
+
+    recipes.ForEach(recipe => {
+      int recipeId = recipe.Id;
+      recipe.FavoriteeIds = _db.Query<string>(sql, new { recipeId }).ToList();
+    });
+
+    return recipes;
   }
 
   public Recipe GetRecipeById(int recipeId) {

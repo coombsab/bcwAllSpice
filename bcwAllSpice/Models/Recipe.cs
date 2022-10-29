@@ -11,5 +11,6 @@ public class Recipe : IRepoItem<int> {
   public string Category { get; set; }
   public string CreatorId { get; set; }
   public Profile Creator { get; set; }
-  public List<Favorite> Favoritees { get; set; }
+  public List<string> FavoriteeIds { get; set; }
+  public List<Profile> Favoritees { get; set; }
 }
