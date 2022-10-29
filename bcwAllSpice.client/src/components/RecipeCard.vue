@@ -1,15 +1,20 @@
 <template>
   <div class="recipe-card text-visible elevation-2" :style="{ backgroundImage: `url(${recipe?.img})` }">
-    <div class="layer selectable p-3" data-bs-toggle="modal" :data-bs-target="'#recipeDetailsModal' + recipe.id" >
+    <div class="layer selectable p-3" data-bs-toggle="modal" :data-bs-target="'#recipeDetailsModal' + recipe.id"
+      @click="getIngredientsByRecipeId()">
       <div class="card-content">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center fs-3">
           <span>{{ recipe.category }}</span>
         </div>
-        <span>{{ recipe.title }}</span>
+        <div class="d-flex flex-column">
+          <span class="fs-3">{{ recipe.title }}</span>
+          <span>{{ recipe.subtitle }}</span>
+        </div>
       </div>
     </div>
-    <i class="mdi mdi-heart heart selectable rounded" type="button" @click="toggleFavorite()" v-if="!isFave()"></i>
-    <i class="mdi mdi-heart heart selectable rounded favorite" type="button" @click="toggleFavorite()" v-else></i>
+    <i class="mdi mdi-heart-outline heart selectable rounded fs-3" type="button" @click="toggleFavorite()"
+      v-if="!isFave()"></i>
+    <i class="mdi mdi-heart heart selectable rounded favorite fs-3" type="button" @click="toggleFavorite()" v-else></i>
 
   </div>
   <RecipeDetailsModal :recipe="recipe" />
@@ -24,30 +29,38 @@ import Pop from "../utils/Pop";
 import RecipeDetailsModal from "./RecipeDetailsModal.vue";
 
 export default {
-    props: {
-        recipe: { type: Recipe, required: true }
-    },
-    setup(props) {
-        return {
-          account: computed(() => AppState.account),
-          async toggleFavorite () {
-            try {
-              await recipesService.toggleFavorite(props.recipe.id)
-            }
-            catch(error) {
-              Pop.error(error.message, "[function]")
-            }
-          },
-          isFave() {
-            if (props.recipe.favoriteeIds.find(id => id === this.account.id)) {
-              return true
-            } else {
-              return false
-            }
-          }
-        };
-    },
-    components: { RecipeDetailsModal }
+  props: {
+    recipe: { type: Recipe, required: true }
+  },
+  setup(props) {
+    return {
+      account: computed(() => AppState.account),
+      async toggleFavorite() {
+        try {
+          await recipesService.toggleFavorite(props.recipe.id)
+        }
+        catch (error) {
+          Pop.error(error.message, "[function]")
+        }
+      },
+      isFave() {
+        if (props.recipe.favoriteeIds.find(id => id === this.account.id)) {
+          return true
+        } else {
+          return false
+        }
+      },
+      async getIngredientsByRecipeId() {
+        try {
+          await recipesService.getIngredientsByRecipeId(props.recipe.id)
+        }
+        catch (error) {
+          Pop.error(error.message, "[getIngredients]")
+        }
+      }
+    };
+  },
+  components: { RecipeDetailsModal }
 }
 </script>
 

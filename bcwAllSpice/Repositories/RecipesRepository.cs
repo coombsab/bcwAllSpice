@@ -9,8 +9,8 @@ public class RecipesRepository : RepositoryBase
   public Recipe CreateRecipe(Recipe recipeData)
   {
     string sql = @"
-      INSERT INTO recipes(title, instructions, img, category, creatorId)
-      VALUES(@Title, @Instructions, @Img, @Category, @CreatorId);
+      INSERT INTO recipes(title, instructions, img, category, creatorId, subtitle)
+      VALUES(@Title, @Instructions, @Img, @Category, @CreatorId, @Subtitle);
       SELECT LAST_INSERT_ID();
     ";
     recipeData.Id = _db.ExecuteScalar<int>(sql, recipeData);
