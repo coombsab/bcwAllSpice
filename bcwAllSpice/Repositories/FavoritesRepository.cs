@@ -74,10 +74,33 @@ public class FavoritesRepository : RepositoryBase
       GROUP BY fav.id;
     ";
 
-    return _db.Query<FavRecipe, Profile, FavRecipe>(sql, (recipe, profile) => {
+    List<FavRecipe> recipes = _db.Query<FavRecipe, Profile, FavRecipe>(sql, (recipe, profile) => {
       recipe.Creator = profile;
       return recipe;
     }, new { accountId }).ToList();
+
+    sql = @"
+      SELECT acc.* FROM favorites fav
+      JOIN accounts acc ON acc.id = fav.accountId
+      WHERE recipeId = @recipeId
+    ";
+
+    recipes.ForEach(recipe => {
+      int recipeId = recipe.Id;
+      recipe.Favoritees = _db.Query<Profile>(sql, new { recipeId }).ToList();
+    });
+
+    sql = @"
+      SELECT accountId FROM favorites
+      WHERE recipeId = @recipeId
+    ";
+
+    recipes.ForEach(recipe => {
+      int recipeId = recipe.Id;
+      recipe.FavoriteeIds = _db.Query<string>(sql, new { recipeId }).ToList();
+    });
+
+    return recipes;
   }
 
   public void DeleteFavorite(int favoriteId) {
@@ -87,10 +110,5 @@ public class FavoritesRepository : RepositoryBase
     ";
 
     _db.Execute(sql, new { favoriteId });
-  }
-
-  public void ToggleLiked(int recipeId, string userId)
-  {
-    throw new NotImplementedException();
   }
 }

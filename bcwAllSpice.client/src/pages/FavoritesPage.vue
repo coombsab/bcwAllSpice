@@ -1,7 +1,7 @@
 <template>
   <section class="favorites">
-    <div class="favorites-content d-flex flex-wrap gap-3 px-3 justify-content-evenly pt-5 mt-5" v-if="recipes.length > 0">
-      <RecipeCard v-for="r in recipes" :key="r.id" :recipe="r" />
+    <div class="favorites-content d-flex flex-wrap gap-3 px-3 justify-content-evenly pt-5 mt-5" v-if="favRecipes.length > 0">
+      <RecipeCard v-for="r in favRecipes" :key="r.id" :recipe="r" />
     </div>
     <div v-else>
       <span class="fadeIn">Sorry, you have favorited no recipes!</span>
@@ -23,7 +23,7 @@ export default {
         await recipesService.getFavoriteRecipes()
       }
       catch(error) {
-        Pop.error(error.message, "[function]")
+        Pop.error(error.message, "[getFavoriteRecipes]")
       }
     }
 
@@ -32,7 +32,7 @@ export default {
     })
 
     return {
-      recipes: computed(() => AppState.recipes)
+      favRecipes: computed(() => AppState.favRecipes)
     }
   }
 }

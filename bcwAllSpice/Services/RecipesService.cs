@@ -23,6 +23,14 @@ public class RecipesService {
     }
     return recipe;
   }
+
+  public FavRecipe GetFavRecipeById(int recipeId) {
+    FavRecipe recipe = _recipesRepository.GetFavRecipeById(recipeId);
+    if (recipe == null) {
+      throw new Exception("Could not find recipe.  Invalid ID.");
+    }
+    return recipe;
+  }
   
   public Recipe EditRecipe(Recipe recipeData, string userId) {
     Recipe recipe = GetRecipeById(recipeData.Id);

@@ -65,6 +65,37 @@ public class RecipesRepository : RepositoryBase
     }, new { recipeId }).FirstOrDefault();
   }
 
+  public FavRecipe GetFavRecipeById(int recipeId) {
+    string sql = @"
+      SELECT rec.*, acc.* FROM recipes rec
+      JOIN accounts acc ON acc.id = rec.creatorId
+      WHERE rec.id = @recipeId;
+    ";
+
+    FavRecipe recipe = _db.Query<FavRecipe, Profile, FavRecipe>(sql, (recipe, profile) => {
+      recipe.Creator = profile;
+      return recipe;
+    }, new { recipeId }).FirstOrDefault();
+
+
+    sql = @"
+      SELECT acc.* FROM favorites fav
+      JOIN accounts acc ON acc.id = fav.accountId
+      WHERE recipeId = @Id
+    ";
+
+    recipe.Favoritees = _db.Query<Profile>(sql, recipe).ToList();
+
+    sql = @"
+      SELECT accountId FROM favorites
+      WHERE recipeId = @Id
+    ";
+
+    recipe.FavoriteeIds = _db.Query<string>(sql, recipe).ToList();
+
+    return recipe;
+  }
+
   public Recipe EditRecipe(Recipe recipe) {
     string sql = @"
       UPDATE recipes

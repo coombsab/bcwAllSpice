@@ -8,13 +8,19 @@
         <span>{{ recipe.title }}</span>
       </div>
     </div>
-    <i class="mdi mdi-heart heart selectable rounded" type="button" @click="toggleFavorite()"></i>
+    <i class="mdi mdi-heart heart selectable rounded" type="button" @click="toggleFavorite()" v-if="!isFave()"></i>
+    <i class="mdi mdi-heart heart selectable rounded favorite" type="button" @click="toggleFavorite()" v-else></i>
+
   </div>
   <RecipeDetailsModal :recipe="recipe" />
 </template>
 
 <script>
+import { computed } from "@vue/reactivity";
+import { AppState } from "../AppState";
 import { Recipe } from "../models/Recipe";
+import { recipesService } from "../services/RecipesService";
+import Pop from "../utils/Pop";
 import RecipeDetailsModal from "./RecipeDetailsModal.vue";
 
 export default {
@@ -23,8 +29,21 @@ export default {
     },
     setup(props) {
         return {
+          account: computed(() => AppState.account),
           async toggleFavorite () {
-            console.log("toggling favs")
+            try {
+              await recipesService.toggleFavorite(props.recipe.id)
+            }
+            catch(error) {
+              Pop.error(error.message, "[function]")
+            }
+          },
+          isFave() {
+            if (props.recipe.favoriteeIds.find(id => id === this.account.id)) {
+              return true
+            } else {
+              return false
+            }
           }
         };
     },
@@ -51,6 +70,10 @@ export default {
   position: absolute;
   right: 2%;
   top: 2%;
+}
+
+.favorite {
+  color: fuchsia;
 }
 
 .card-content {

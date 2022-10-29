@@ -112,10 +112,10 @@ public class RecipesController : ControllerBase
 
   [HttpPut("{recipeId}/favorite")]
   [Authorize]
-  public async Task<ActionResult<Recipe>> ToggleLiked(int recipeId) {
+  public async Task<ActionResult<FavRecipe>> ToggleLiked(int recipeId) {
     try {
       Account userInfo = await _auth0Provider.GetUserInfoAsync<Account>(HttpContext);
-      Recipe recipe = _favoritesService.ToggleLiked(recipeId, userInfo.Id);
+      FavRecipe recipe = _favoritesService.ToggleLiked(recipeId, userInfo.Id);
       return Ok(recipe);
     }
     catch(Exception e) {

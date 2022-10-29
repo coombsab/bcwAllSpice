@@ -50,9 +50,9 @@ public class FavoritesService {
     return favorite;
   }
 
-  public Recipe ToggleLiked(int recipeId, string userId)
+  public FavRecipe ToggleLiked(int recipeId, string userId)
   {
-    Recipe recipe = _recipesService.GetRecipeById(recipeId);
+    FavRecipe recipe = _recipesService.GetFavRecipeById(recipeId);
     Favorite favorite = _favoritesRepository.GetFavorite(recipeId, userId);
 
     if (favorite != null) {
@@ -60,7 +60,7 @@ public class FavoritesService {
     } else {
       favorite = _favoritesRepository.CreateFavorite(recipeId, userId);
     }
-    
+    recipe = _recipesService.GetFavRecipeById(recipeId);
     return recipe;
   }
 }

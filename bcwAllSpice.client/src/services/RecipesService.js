@@ -10,9 +10,9 @@ class RecipesService {
   }
 
   async getFavoriteRecipes() {
-    AppState.recipes = []
+    AppState.favRecipes = []
     const res = await api.get("account/favorites")
-    AppState.recipes = res.data.map(data => new Recipe(data))
+    AppState.favRecipes = res.data.map(data => new Recipe(data))
     
   }
 
@@ -21,6 +21,25 @@ class RecipesService {
     const res = await api.get("api/recipes")
     AppState.recipes = res.data.map(data => new Recipe(data))
 
+  }
+
+  async toggleFavorite(recipeId) {
+    let recipe = AppState.recipes.find(r => r.id == recipeId)
+    const recipeIndex = AppState.recipes.indexOf(recipe)
+    if (!recipe) {
+      throw new Error("Cannot toggle favorite due to invalid recipe ID.")
+    }
+    const res = await api.put(`api/recipes/${recipeId}/favorite`)
+
+    recipe = new Recipe(res.data)
+    AppState.recipes.splice(recipeIndex, 1, recipe)
+
+    let favRecipe = AppState.favRecipes.find(r => r.id === recipeId)
+    if (!favRecipe) {
+      AppState.favRecipes.push(recipe)
+    } else {
+      AppState.favRecipes = AppState.favRecipes.filter(r => r.id !== recipeId)
+    }
   }
 }
 
