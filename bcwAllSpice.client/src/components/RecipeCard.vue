@@ -1,5 +1,5 @@
 <template>
-  <div class="recipe-card text-visible elevation-2" :style="{ backgroundImage: `url(${recipe.img})` }">
+  <div class="recipe-card text-visible elevation-2" :style="{ backgroundImage: `url(${recipe?.img})` }">
     <div class="layer selectable p-3" data-bs-toggle="modal" :data-bs-target="'#recipeDetailsModal' + recipe.id" >
       <div class="card-content">
         <div class="d-flex align-items-center">

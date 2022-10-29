@@ -1,6 +1,6 @@
 <template>
   <section class="home">
-    <div class="home-content d-flex flex-wrap gap-5 px-3 justify-content-evenly pt-5 mt-5" v-if="recipes.length > 0">
+    <div class="home-content d-flex flex-wrap gap-5 px-3 justify-content-evenly py-5 mt-5" v-if="recipes.length > 0">
       <RecipeCard v-for="r in recipes" :key="r.id" :recipe="r" />
     </div>
     <div v-else>

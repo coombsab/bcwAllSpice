@@ -17,8 +17,8 @@ CREATE TABLE
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Update',
         title VARCHAR(255) NOT NULL,
         subTitle VARCHAR(255),
-        instructions MEDIUMTEXT NOT NULL,
-        img MEDIUMTEXT NOT NULL,
+        instructions MEDIUMTEXT,
+        img MEDIUMTEXT,
         category VARCHAR(255) NOT NULL,
         creatorId VARCHAR(255) NOT NULL,
         FOREIGN KEY (creatorId) REFERENCES accounts(id) ON DELETE CASCADE

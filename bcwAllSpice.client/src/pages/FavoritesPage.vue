@@ -1,6 +1,6 @@
 <template>
   <section class="favorites">
-    <div class="favorites-content d-flex flex-wrap gap-3 px-3 justify-content-evenly pt-5 mt-5" v-if="favRecipes.length > 0">
+    <div class="favorites-content d-flex flex-wrap gap-3 px-3 justify-content-evenly py-5 mt-5" v-if="favRecipes.length > 0">
       <RecipeCard v-for="r in favRecipes" :key="r.id" :recipe="r" />
     </div>
     <div v-else>

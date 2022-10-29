@@ -41,6 +41,11 @@ class RecipesService {
       AppState.favRecipes = AppState.favRecipes.filter(r => r.id !== recipeId)
     }
   }
+
+  async createRecipe(recipeData) {
+    const res = await api.post("api/recipes", recipeData)
+    AppState.recipes.push(new Recipe(res.data))
+  }
 }
 
 export const recipesService = new RecipesService()

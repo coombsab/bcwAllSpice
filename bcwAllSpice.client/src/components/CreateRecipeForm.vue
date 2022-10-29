@@ -8,9 +8,9 @@
       </div>
       <div class="form-floating flex-grow-1">
         <select class="form-select" id="floatingSelect" aria-label="Select a Category" required v-model="editable.category">
-          <option value="1">Breakfast</option>
-          <option value="2">Lunch</option>
-          <option value="3">Dinner</option>
+          <option value="Breakfast">Breakfast</option>
+          <option value="Lunch">Lunch</option>
+          <option value="3Dinner">Dinner</option>
         </select>
         <label for="floatingSelect">Category</label>
       </div>
@@ -38,10 +38,11 @@ export default {
       editable,
       async handleSubmit() {
         try {
+          console.log("handling submit", editable.value)
           await recipesService.createRecipe(editable.value)
         }
         catch(error) {
-          Pop.error(error.message, "[function]")
+          Pop.error(error.message, "[createRecipe]")
         }
       }
     }
