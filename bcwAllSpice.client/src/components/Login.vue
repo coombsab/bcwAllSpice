@@ -7,7 +7,7 @@
     <div v-else>
       <div class="dropdown dropstart my-2 my-lg-0">
         <div type="button" class="bg-dark border-0 selectable no-select photo-container" data-bs-toggle="dropdown"
-          aria-expanded="false">
+          aria-expanded="false"  title="Account Options">
           <div v-if="account.picture || user.picture">
             <img :src="account.picture || user.picture" alt="account photo" height="40" class="account-photo" />
           </div>

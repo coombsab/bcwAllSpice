@@ -13,28 +13,34 @@
 import { computed } from "@vue/reactivity";
 import { onMounted } from "vue";
 import { AppState } from "../AppState";
+import RecipeCard from "../components/RecipeCard.vue";
 import { recipesService } from "../services/RecipesService";
 import Pop from "../utils/Pop";
 
 export default {
-  setup() {
-    async function getFavoriteRecipes() {
-      try {
-        await recipesService.getFavoriteRecipes()
-      }
-      catch(error) {
-        Pop.error(error.message, "[getFavoriteRecipes]")
-      }
-    }
-
-    onMounted(() => {
-      getFavoriteRecipes()
-    })
-
-    return {
-      favRecipes: computed(() => AppState.favRecipes)
-    }
-  }
+    setup() {
+        async function getFavoriteRecipes() {
+            try {
+                await recipesService.getFavoriteRecipes();
+            }
+            catch (error) {
+                Pop.error(error.message, "[getFavoriteRecipes]");
+            }
+        }
+        onMounted(() => {
+            getFavoriteRecipes();
+        });
+        return {
+          favRecipes: computed(() => {
+              const filterByCategory = AppState.favRecipes.filter(recipe => recipe.category.toUpperCase().includes(AppState.search.toUpperCase()))
+              const filterByTitle = AppState.favRecipes.filter(recipe => recipe.title.toUpperCase().includes(AppState.search.toUpperCase()))
+              const filterBySubtitle = AppState.favRecipes.filter(recipe => recipe.subtitle.toUpperCase().includes(AppState.search.toUpperCase()))
+              const finalSearchFilter = [...new Set([...filterByCategory, ...filterByTitle, ...filterBySubtitle])]
+              return finalSearchFilter
+            })
+        };
+    },
+    components: { RecipeCard }
 }
 </script>
 

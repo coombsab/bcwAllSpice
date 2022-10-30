@@ -4,7 +4,7 @@ export class Recipe {
     this.createdAt = data.createdAt
     this.updatedAt = data.updatedAt
     this.title = data.title
-    this.subtitle = data.subtitle
+    this.subtitle = data.subtitle || ""
     this.instructions = data.instructions
     this.img = data.img || "https://andersnoren.se/themes/koji/wp-content/themes/koji/assets/images/default-fallback-image.png"
     this.category = data.category

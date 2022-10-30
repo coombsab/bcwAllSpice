@@ -31,7 +31,13 @@ export default {
             getAllRecipes();
         });
         return {
-            recipes: computed(() => AppState.recipes)
+            recipes: computed(() => {
+              const filterByCategory = AppState.recipes.filter(recipe => recipe.category.toUpperCase().includes(AppState.search.toUpperCase()))
+              const filterByTitle = AppState.recipes.filter(recipe => recipe.title.toUpperCase().includes(AppState.search.toUpperCase()))
+              const filterBySubtitle = AppState.recipes.filter(recipe => recipe.subtitle.toUpperCase().includes(AppState.search.toUpperCase()))
+              const finalSearchFilter = [...new Set([...filterByCategory, ...filterByTitle, ...filterBySubtitle])]
+              return finalSearchFilter
+            })
         };
     },
     components: { RecipeCard }
