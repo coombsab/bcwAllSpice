@@ -11,11 +11,14 @@
           <div class="d-flex justify-content-evenly gap-3">
             <div class="pos-relative">
               <img :src="recipe.img" :alt="recipe.title">
-              <i class="mdi mdi-heart-outline heart selectable rounded fs-1 text-visible" type="button"
+              <div class="heart" v-if="routeName != 'Favorites'">
+
+                <i class="mdi mdi-heart-outline selectable rounded fs-1 text-visible" type="button"
                 @click="toggleFavorite()" v-if="!isFave()"></i>
-              <i class="mdi mdi-heart heart selectable rounded favorite fs-1 text-visible" type="button"
+                <i class="mdi mdi-heart selectable rounded favorite fs-1 text-visible" type="button"
                 @click="toggleFavorite()" v-else></i>
-            </div>
+              </div>
+              </div>
             <div class="d-flex flex-column">
               <div>
                 <h3>{{ recipe.title }}</h3>
@@ -54,6 +57,7 @@
 <script>
 import { computed } from "@vue/reactivity";
 import { onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { AppState } from "../AppState";
 import { Recipe } from "../models/Recipe";
 import { recipesService } from "../services/RecipesService";
@@ -61,10 +65,13 @@ import Pop from "../utils/Pop";
 
 export default {
   props: {
-    recipe: { type: Recipe, required: true }
+    recipe: { type: Recipe, required: true },
+    routeName: { type: String}
   },
   setup(props) {
+    const route = useRoute()
     return {
+      route,
       account: computed(() => AppState.account),
       ingredients: computed(() => AppState.ingredients),
       async toggleFavorite() {
@@ -72,7 +79,7 @@ export default {
           await recipesService.toggleFavorite(props.recipe.id)
         }
         catch (error) {
-          Pop.error(error.message, "[function]")
+          Pop.error(error.message, "[toggleFavorite]")
         }
       },
       isFave() {

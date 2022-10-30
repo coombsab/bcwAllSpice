@@ -12,12 +12,14 @@
         </div>
       </div>
     </div>
+
     <i class="mdi mdi-heart-outline heart selectable rounded fs-3" type="button" @click="toggleFavorite()"
       v-if="!isFave()"></i>
     <i class="mdi mdi-heart heart selectable rounded favorite fs-3" type="button" @click="toggleFavorite()" v-else></i>
 
+
   </div>
-  <RecipeDetailsModal :recipe="recipe" />
+  <RecipeDetailsModal :routeName="routeName" :recipe="recipe" />
 </template>
 
 <script>
@@ -30,13 +32,17 @@ import RecipeDetailsModal from "./RecipeDetailsModal.vue";
 
 export default {
   props: {
-    recipe: { type: Recipe, required: true }
+    recipe: { type: Recipe, required: true },
+    routeName: { type: String }
   },
   setup(props) {
+
     return {
+
       account: computed(() => AppState.account),
       async toggleFavorite() {
         try {
+          console.log(props.routeName)
           await recipesService.toggleFavorite(props.recipe.id)
         }
         catch (error) {
