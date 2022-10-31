@@ -4,14 +4,14 @@ public class Recipe : IRepoItem<int> {
   public int Id { get; set; }
   public DateTime CreatedAt { get; set; }
   public DateTime UpdatedAt { get; set; }
-  [Required]
+  // [Required]
   public string Title { get; set; }
   public string Subtitle { get; set; }
   public string Instructions { get; set; }
   public string Img { get; set; }
-  [Required]
+  // [Required]
   public string Category { get; set; }
-  [Required]
+  // [Required]
   public string CreatorId { get; set; }
 
   // populated info
