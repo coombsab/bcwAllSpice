@@ -9,7 +9,7 @@ public class RecipesService {
   }
 
   public Recipe CreateRecipe(Recipe recipeData, string userId) {
-      recipeData.CreatorId = userInfo.Id;
+      recipeData.CreatorId = userId;
     return _recipesRepository.CreateRecipe(recipeData);
   }
 
