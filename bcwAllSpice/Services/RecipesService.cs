@@ -8,7 +8,8 @@ public class RecipesService {
     _recipesRepository = recipesRepository;
   }
 
-  public Recipe CreateRecipe(Recipe recipeData) {
+  public Recipe CreateRecipe(Recipe recipeData, string userId) {
+      recipeData.CreatorId = userInfo.Id;
     return _recipesRepository.CreateRecipe(recipeData);
   }
 
@@ -32,7 +33,8 @@ public class RecipesService {
     return recipe;
   }
   
-  public Recipe EditRecipe(Recipe recipeData, string userId) {
+  public Recipe EditRecipe(Recipe recipeData, string userId, int recipeId) {
+    recipeData.Id = recipeId;
     Recipe recipe = GetRecipeById(recipeData.Id);
     if (recipe.CreatorId != userId) {
       throw new Exception("That is not your recipe.  You may not edit it.");

@@ -25,8 +25,7 @@ public class RecipesController : ControllerBase
     try
     {
       Account userInfo = await _auth0Provider.GetUserInfoAsync<Account>(HttpContext);
-      recipeData.CreatorId = userInfo.Id;
-      Recipe recipe = _recipesService.CreateRecipe(recipeData);
+      Recipe recipe = _recipesService.CreateRecipe(recipeData, userInfo.Id);
       return Ok(recipe);
     }
     catch (Exception e)
@@ -84,8 +83,7 @@ public class RecipesController : ControllerBase
     try
     {
       Account userInfo = await _auth0Provider.GetUserInfoAsync<Account>(HttpContext);
-      recipeData.Id = recipeId;
-      _recipesService.EditRecipe(recipeData, userInfo.Id);
+      _recipesService.EditRecipe(recipeData, userInfo.Id, recipeId);
       return Ok(recipeData);
     }
     catch (Exception e)
