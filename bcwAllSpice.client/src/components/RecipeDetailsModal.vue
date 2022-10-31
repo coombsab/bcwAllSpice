@@ -13,12 +13,29 @@
                 <i class="mdi mdi-heart selectable rounded favorite fs-1 text-visible" type="button"
                   @click="toggleFavorite()" v-else></i>
               </div>
-              <i class="mdi mdi-square-edit-outline text-visible selectable edit-icon fs-1 on-hover"></i>
+              <div class="edit-icon d-flex align-items-center on-hover">
+                <i class="mdi mdi-square-edit-outline text-visible selectable fs-1"
+                  @click="toggleVisibility('imgForm')"></i>
+                <form @submit.prevent="editRecipe('imgForm')" id="imgForm">
+                  <div class="form-floating">
+                    <input type="url" id="editImg" class="form-control" placeholder="Image URL" v-model="editable.img"
+                      onfocus="select()">
+                    <label for="editImg">Image URL</label>
+                  </div>
+                </form>
+              </div>
             </div>
             <div class="d-flex flex-column w-100">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h3>{{ recipe.title }} <i class="mdi mdi-square-edit-outline selectable" title="Edit Title"></i></h3>
+                  <h3 v-show="!isEditTitleVisible">{{ recipe.title }} <i class="mdi mdi-square-edit-outline selectable" title="Edit Title"
+                      @click="toggleVisibility('titleForm')"></i></h3>
+                  <form @submit.prevent="editRecipe('titleForm')" id="titleForm" v-show="isEditTitleVisible">
+                    <div class="form-floating">
+                      <input type="text" id="editTitle" class="form-control" placeholder="Edit Title" v-model="editable.title">
+                      <label for="editTitle">Edit Title</label>
+                    </div>
+                  </form>
                   <h6>{{ recipe.subtitle === "" ? 'Add subtitle' : recipe.subtitle }} <i
                       class="mdi mdi-square-edit-outline selectable" title="Edit Subtitle"
                       v-if="recipe.subtitle !== ''"></i><i class="mdi mdi-plus-outline selectable"
@@ -70,7 +87,7 @@
 
 <script>
 import { computed } from "@vue/reactivity";
-import { onMounted } from "vue";
+import { ref, onMounted, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { AppState } from "../AppState";
 import { Recipe } from "../models/Recipe";
@@ -84,8 +101,15 @@ export default {
   },
   setup(props) {
     const route = useRoute()
+    const editable = ref({})
+
+    watchEffect(() => {
+      editable.value = { ...props.recipe };
+    });
     return {
       route,
+      editable,
+      isEditTitleVisible: computed(() => AppState.isEditTitleVisible),
       account: computed(() => AppState.account),
       ingredients: computed(() => AppState.ingredients),
       async toggleFavorite() {
@@ -103,6 +127,22 @@ export default {
           return false
         }
       },
+      async editRecipe(elementId) {
+        try {
+          // console.log("editing recipe from", elementId)
+          editable.value.id = props.recipe.id
+          await recipesService.editRecipe(editable.value)
+          this.toggleVisibility(elementId)
+          // editable.value = {}
+        }
+        catch (error) {
+          Pop.error(error.message, "[editRecipe]")
+        }
+      },
+      toggleVisibility(elementId) {
+        console.log("unhiding", elementId)
+        AppState.isEditTitleVisible = !AppState.isEditTitleVisible
+      }
     }
   }
 }

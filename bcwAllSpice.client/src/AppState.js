@@ -11,5 +11,6 @@ export const AppState = reactive({
   favRecipes: [],
   /** @type {import('./models/Ingredient.js').Ingredient[]} */
   ingredients: [],
-  search: ""
+  search: "",
+  isEditTitleVisible: false
 })

@@ -53,6 +53,17 @@ class RecipesService {
     const res = await api.get(`api/recipes/${recipeId}/ingredients`)
     AppState.ingredients = res.data.map(data => new Ingredient(data))
   }
+
+  async editRecipe(recipeData) {
+    console.log("Editing recipe", recipeData)
+    const recipe = AppState.recipes.find(r => r.id === recipeData.id)
+    if (!recipe) {
+      throw new Error("Cannot find recipe to edit.  Invalid ID.")
+    }
+    const res = await api.put(`api/recipes/${recipeData.id}`, recipeData)
+    const recipeIndex = AppState.recipes.indexOf(recipe)
+    AppState.recipes.splice(recipeIndex, 1, new Recipe(res.data))
+  }
 }
 
 export const recipesService = new RecipesService()

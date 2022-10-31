@@ -102,7 +102,13 @@ public class RecipesRepository : RepositoryBase
       SET title = @Title, instructions = @Instructions, img = @Img, category = @Category
       WHERE id = @Id;
     ";
-    _db.Execute(sql, recipe);
+    var rows = _db.Execute(sql, recipe);
+    if (rows < 1) {
+      throw new Exception("Changes were not saved.");
+    }
+    if (rows > 1) {
+      throw new Exception("Something went wrong with the edit.  Contact your DBA.");
+    }
     return recipe;
   }
 
@@ -113,6 +119,12 @@ public class RecipesRepository : RepositoryBase
       WHERE id = @recipeId;
     ";
 
-    _db.Execute(sql, new { recipeId });
+    var rows = _db.Execute(sql, new { recipeId });
+    if (rows < 1) {
+      throw new Exception("Recipe probably was not deleted.");
+    }
+    if (rows > 1) {
+      throw new Exception("Something went wrong with the delete.  Contact your DBA.");
+    }
   }
 }
