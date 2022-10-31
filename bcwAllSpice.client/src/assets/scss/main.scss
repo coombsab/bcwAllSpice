@@ -42,8 +42,10 @@ form:invalid button[type="submit"] {
 }
 
 .text-visible {
-  text-shadow: 1px 1px rgba(0, 0, 0, 0.644), 0px 0px 5px rgba(255, 166, 0, 0.678);
-  color: whitesmoke;
-  font-weight: 800;
+  // text-shadow: 1px 1px rgba(0, 0, 0, 0.644), 0px 0px 5px rgba(255, 166, 0, 0.678);
+  text-shadow: 2px 0 2px rgba(0, 0, 0, 0.644), 0 2px 2px rgba(0, 0, 0, 0.644), -2px 0 2px rgba(0, 0, 0, 0.644), 0 -2px 2px rgba(0, 0, 0, 0.644), 0 0 10px rgba(255, 4, 4, 0.846);
+  color: rgb(241, 231, 231);
+  font-weight: 700;
   letter-spacing: 0.035rem;
+
 }
