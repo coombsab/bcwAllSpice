@@ -1,7 +1,7 @@
 <template>
   <section class="favorites">
-    <div class="favorites-content d-flex flex-wrap gap-3 px-3 justify-content-evenly py-5 mt-5" v-if="favRecipes.length > 0">
-      <RecipeCard :routeName="route.name" v-for="r in favRecipes" :key="r.id" :recipe="r" />
+    <div class="favorites-content d-flex flex-wrap gap-3 px-3 justify-content-evenly py-5 mt-5" v-if="recipes.length > 0">
+      <RecipeCard :routeName="route.name" v-for="r in recipes" :key="r.id" :recipe="r" />
     </div>
     <div v-else>
       <span class="fadeIn">Sorry, you have favorited no recipes!</span>
@@ -34,10 +34,10 @@ export default {
         const route = useRoute()
         return {
           route,
-          favRecipes: computed(() => {
-              const filterByCategory = AppState.favRecipes.filter(recipe => recipe.category.toUpperCase().includes(AppState.search.toUpperCase()))
-              const filterByTitle = AppState.favRecipes.filter(recipe => recipe.title.toUpperCase().includes(AppState.search.toUpperCase()))
-              const filterBySubtitle = AppState.favRecipes.filter(recipe => recipe.subtitle.toUpperCase().includes(AppState.search.toUpperCase()))
+          recipes: computed(() => {
+              const filterByCategory = AppState.recipes.filter(recipe => recipe.category.toUpperCase().includes(AppState.search.toUpperCase()))
+              const filterByTitle = AppState.recipes.filter(recipe => recipe.title.toUpperCase().includes(AppState.search.toUpperCase()))
+              const filterBySubtitle = AppState.recipes.filter(recipe => recipe.subtitle.toUpperCase().includes(AppState.search.toUpperCase()))
               const finalSearchFilter = [...new Set([...filterByCategory, ...filterByTitle, ...filterBySubtitle])]
               return finalSearchFilter
             })

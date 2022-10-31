@@ -16,5 +16,6 @@ export const AppState = reactive({
   isEditSubtitleVisible: false,
   isEditImageVisible: false,
   isEditInstructionsVisible: false,
-  isEditIngredientsVisible: false
+  isEditIngredientsVisible: false,
+  isEditCategoryVisible: false
 })

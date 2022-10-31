@@ -99,7 +99,7 @@ public class RecipesRepository : RepositoryBase
   public Recipe EditRecipe(Recipe recipe) {
     string sql = @"
       UPDATE recipes
-      SET title = @Title, instructions = @Instructions, img = @Img, category = @Category
+      SET title = @Title, instructions = @Instructions, img = @Img, category = @Category, subtitle = @Subtitle
       WHERE id = @Id;
     ";
     var rows = _db.Execute(sql, recipe);

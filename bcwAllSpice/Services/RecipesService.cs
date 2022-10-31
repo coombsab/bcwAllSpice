@@ -43,6 +43,7 @@ public class RecipesService {
     recipe.Instructions = recipeData.Instructions ?? recipe.Instructions;
     recipe.Img = recipeData.Img ?? recipe.Img;
     recipe.Category = recipeData.Category ?? recipe.Category;
+    recipe.Subtitle = recipeData.Subtitle ?? recipe.Subtitle;
     return _recipesRepository.EditRecipe(recipe);
   }
 

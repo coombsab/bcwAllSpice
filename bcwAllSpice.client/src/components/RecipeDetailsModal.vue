@@ -28,15 +28,32 @@
             <div class="d-flex flex-column w-100">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h3 v-show="!isEditTitleVisible">{{ recipe.title }} <i class="mdi mdi-square-edit-outline selectable"
-                      title="Edit Title" @click="toggleVisibility('titleForm')"></i></h3>
-                  <form @submit.prevent="editRecipe('titleForm')" id="titleForm" v-show="isEditTitleVisible">
-                    <div class="form-floating">
-                      <input type="text" id="editTitle" class="form-control" placeholder="Edit Title"
-                        v-model="editable.title" onfocus="select()">
-                      <label for="editTitle">Edit Title</label>
+                  <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <div>
+                      <h3 v-show="!isEditTitleVisible">{{ recipe.title }} <i
+                          class="mdi mdi-square-edit-outline selectable" title="Edit Title"
+                          @click="toggleVisibility('titleForm')"></i></h3>
+                      <form @submit.prevent="editRecipe('titleForm')" id="titleForm" v-show="isEditTitleVisible">
+                        <div class="form-floating">
+                          <input type="text" id="editTitle" class="form-control" placeholder="Edit Title"
+                            v-model="editable.title" onfocus="select()">
+                          <label for="editTitle">Edit Title</label>
+                        </div>
+                      </form>
                     </div>
-                  </form>
+                    <div>
+                      <p class="m-0" v-show="!isEditCategoryVisible">({{ recipe.category }}) <i
+                          class="mdi mdi-square-edit-outline selectable" title="Edit Category"
+                          @click="toggleVisibility('categoryForm')"></i></p>
+                      <form @submit.prevent="editRecipe('categoryForm')" id="categoryForm" v-show="isEditCategoryVisible">
+                        <div class="form-floating">
+                          <input type="text" id="editCategory" class="form-control" placeholder="Edit Category"
+                            v-model="editable.category" onfocus="select()">
+                          <label for="editCategory">Edit Category</label>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                   <h6 v-show="!isEditSubtitleVisible">{{ recipe.subtitle === "" ? 'Add subtitle' : recipe.subtitle }} <i
                       class="mdi mdi-square-edit-outline selectable" title="Edit Subtitle" v-if="recipe.subtitle !== ''"
                       @click="toggleVisibility('subtitleForm')"></i><i class="mdi mdi-plus-outline selectable"
@@ -62,7 +79,8 @@
                       class="mdi mdi-plus-outline selectable" title="Add Instructions"
                       @click="toggleVisibility('instructionsForm')" v-else></i>
                   </div>
-                  <form @submit.prevent="editRecipe('instructionsForm')" id="instructionsForm" v-show="isEditInstructionsVisible">
+                  <form @submit.prevent="editRecipe('instructionsForm')" id="instructionsForm"
+                    v-show="isEditInstructionsVisible">
                     <div class="form-floating">
                       <textarea id="editInstructions" class="form-control" placeholder="Edit Instructions"
                         v-model="editable.instructions" onfocus="select()"></textarea>
@@ -90,7 +108,7 @@
         </div>
         <div class="modal-footer">
           <div class="d-flex justify-content-between align-items-center w-100">
-            <button type="button" class="btn btn-danger">Delete Recipe</button>
+            <button type="button" class="btn btn-danger" @click="deleteRecipe()">Delete Recipe</button>
             <div class="d-flex gap-3">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
@@ -103,6 +121,7 @@
 
 <script>
 import { computed } from "@vue/reactivity";
+import { Modal } from "bootstrap";
 import { ref, onMounted, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { AppState } from "../AppState";
@@ -112,77 +131,96 @@ import Pop from "../utils/Pop";
 import IngredientCard from "./IngredientCard.vue";
 
 export default {
-    props: {
-        recipe: { type: Recipe, required: true },
-        routeName: { type: String }
-    },
-    setup(props) {
-        const route = useRoute();
-        const editable = ref({});
-        watchEffect(() => {
-            editable.value = { ...props.recipe };
-        });
-        return {
-            route,
-            editable,
-            isEditTitleVisible: computed(() => AppState.isEditTitleVisible),
-            isEditSubtitleVisible: computed(() => AppState.isEditSubtitleVisible),
-            isEditImageVisible: computed(() => AppState.isEditImageVisible),
-            isEditInstructionsVisible: computed(() => AppState.isEditInstructionsVisible),
-            account: computed(() => AppState.account),
-            ingredients: computed(() => AppState.ingredients),
-            async toggleFavorite() {
-                try {
-                    await recipesService.toggleFavorite(props.recipe.id);
-                }
-                catch (error) {
-                    Pop.error(error.message, "[toggleFavorite]");
-                }
-            },
-            isFave() {
-                if (props.recipe.favoriteeIds.find(id => id === this.account.id)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            },
-            async editRecipe(elementId) {
-                try {
-                    // console.log("editing recipe from", elementId)
-                    editable.value.id = props.recipe.id;
-                    await recipesService.editRecipe(editable.value);
-                    this.toggleVisibility(elementId);
-                    // editable.value = {}
-                }
-                catch (error) {
-                    Pop.error(error.message, "[editRecipe]");
-                }
-            },
-            toggleVisibility(elementId) {
-                // console.log("unhiding", elementId)
-                switch (elementId) {
-                    case "titleForm":
-                        AppState.isEditTitleVisible = !AppState.isEditTitleVisible;
-                        document.getElementById(elementId).focus();
-                        break;
-                    case "subtitleForm":
-                        AppState.isEditSubtitleVisible = !AppState.isEditSubtitleVisible;
-                        document.getElementById(elementId).focus();
-                        break;
-                    case "imgForm":
-                        AppState.isEditImageVisible = !AppState.isEditImageVisible;
-                        document.getElementById(elementId).focus();
-                        break;
-                    case "instructionsForm":
-                        AppState.isEditInstructionsVisible = !AppState.isEditInstructionsVisible;
-                        document.getElementById(elementId).focus();
-                        break;
-                }
-            }
-        };
-    },
-    components: { IngredientCard }
+  props: {
+    recipe: { type: Recipe, required: true },
+    routeName: { type: String }
+  },
+  setup(props) {
+    const route = useRoute();
+    const editable = ref({});
+    watchEffect(() => {
+      editable.value = { ...props.recipe };
+    });
+    return {
+      route,
+      editable,
+      isEditTitleVisible: computed(() => AppState.isEditTitleVisible),
+      isEditSubtitleVisible: computed(() => AppState.isEditSubtitleVisible),
+      isEditImageVisible: computed(() => AppState.isEditImageVisible),
+      isEditInstructionsVisible: computed(() => AppState.isEditInstructionsVisible),
+      isEditCategoryVisible: computed(() => AppState.isEditCategoryVisible),
+      account: computed(() => AppState.account),
+      ingredients: computed(() => AppState.ingredients),
+      async toggleFavorite() {
+        try {
+          await recipesService.toggleFavorite(props.recipe.id);
+        }
+        catch (error) {
+          Pop.error(error.message, "[toggleFavorite]");
+        }
+      },
+      isFave() {
+        if (props.recipe.favoriteeIds.find(id => id === this.account.id)) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      },
+      async editRecipe(elementId) {
+        try {
+          // console.log("editing recipe from", elementId)
+          editable.value.id = props.recipe.id;
+          await recipesService.editRecipe(editable.value);
+          this.toggleVisibility(elementId);
+          // editable.value = {}
+        }
+        catch (error) {
+          Pop.error(error.message, "[editRecipe]");
+        }
+      },
+      async deleteRecipe() {
+        try {
+          const yes = await Pop.confirm(`Delete ${props.recipe.title}?`)
+          if (!yes) {
+            return
+          }
+          Modal.getOrCreateInstance(document.getElementById('recipeDetailsModal' + props.recipe.id)).hide()
+          await recipesService.deleteRecipe(props.recipe.id)
+
+        }
+        catch (error) {
+          Pop.error(error.message, "[deleteRecipe]")
+        }
+      },
+      toggleVisibility(elementId) {
+        // console.log("unhiding", elementId)
+        switch (elementId) {
+          case "titleForm":
+            AppState.isEditTitleVisible = !AppState.isEditTitleVisible;
+            document.getElementById(elementId).focus();
+            break;
+          case "subtitleForm":
+            AppState.isEditSubtitleVisible = !AppState.isEditSubtitleVisible;
+            document.getElementById(elementId).focus();
+            break;
+          case "imgForm":
+            AppState.isEditImageVisible = !AppState.isEditImageVisible;
+            document.getElementById(elementId).focus();
+            break;
+          case "instructionsForm":
+            AppState.isEditInstructionsVisible = !AppState.isEditInstructionsVisible;
+            document.getElementById(elementId).focus();
+            break;
+          case "categoryForm":
+            AppState.isEditCategoryVisible = !AppState.isEditCategoryVisible;
+            document.getElementById(elementId).focus();
+            break;
+        }
+      }
+    };
+  },
+  components: { IngredientCard }
 }
 </script>
 

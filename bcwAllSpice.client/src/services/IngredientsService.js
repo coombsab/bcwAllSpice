@@ -8,7 +8,8 @@ class IngredientsService {
     ingredientData.recipeId = recipeId
     console.log(ingredientData)
     const res = await api.post("api/ingredients", ingredientData)
-    AppState.ingredients.push(new Ingredient(res.data))
+    // AppState.ingredients.push(new Ingredient(res.data))
+    AppState.ingredients = [...AppState.ingredients, new Ingredient(res.data)]
   }
 
   async deleteIngredient(ingredientId) {

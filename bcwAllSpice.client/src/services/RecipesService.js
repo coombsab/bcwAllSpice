@@ -11,10 +11,10 @@ class RecipesService {
   }
 
   async getFavoriteRecipes() {
-    AppState.favRecipes = []
+    AppState.recipes = []
     const res = await api.get("account/favorites")
-    AppState.favRecipes = res.data.map(data => new Recipe(data))
-    
+    AppState.recipes = res.data.map(data => new Recipe(data))
+
   }
 
   async getMyRecipes() {
@@ -57,12 +57,21 @@ class RecipesService {
   async editRecipe(recipeData) {
     console.log("Editing recipe", recipeData)
     const recipe = AppState.recipes.find(r => r.id === recipeData.id)
-    if (!recipe) {
+    const favRecipe = AppState.favRecipes.find(r => r.id === recipeData.id)
+    if (!recipe && !favRecipe) {
       throw new Error("Cannot find recipe to edit.  Invalid ID.")
     }
     const res = await api.put(`api/recipes/${recipeData.id}`, recipeData)
     const recipeIndex = AppState.recipes.indexOf(recipe)
     AppState.recipes.splice(recipeIndex, 1, new Recipe(res.data))
+    const favRecipeIndex = AppState.recipes.indexOf(favRecipe)
+    AppState.favRecipes.splice(favRecipeIndex, 1, new Recipe(res.data))
+  }
+
+  async deleteRecipe(recipeId) {
+    const res = await api.delete(`api/recipes/${recipeId}`)
+    AppState.recipes = AppState.recipes.filter(recipe => recipe.id !== recipeId)
+    AppState.favRecipes = AppState.favRecipes.filter(recipe => recipe.id !== recipeId)
   }
 }
 
