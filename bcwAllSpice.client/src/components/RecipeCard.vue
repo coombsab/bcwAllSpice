@@ -58,11 +58,20 @@ export default {
       },
       async getIngredientsByRecipeId() {
         try {
+          this.resetFormVisibility()
           await recipesService.getIngredientsByRecipeId(props.recipe.id)
         }
         catch (error) {
           Pop.error(error.message, "[getIngredients]")
         }
+      },
+
+      resetFormVisibility() {
+        AppState.isEditTitleVisible = false
+        AppState.isEditSubtitleVisible = false
+        AppState.isEditImageVisible = false
+        AppState.isEditInstructionsVisible = false
+        // AppState.isEditIngredientVisible = false
       }
     };
   },

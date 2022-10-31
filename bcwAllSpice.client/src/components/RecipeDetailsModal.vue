@@ -13,10 +13,10 @@
                 <i class="mdi mdi-heart selectable rounded favorite fs-1 text-visible" type="button"
                   @click="toggleFavorite()" v-else></i>
               </div>
-              <div class="edit-icon d-flex align-items-center on-hover">
-                <i class="mdi mdi-square-edit-outline text-visible selectable fs-1"
-                  @click="toggleVisibility('imgForm')"></i>
-                <form @submit.prevent="editRecipe('imgForm')" id="imgForm">
+              <div class="edit-icon-div d-flex align-items-center">
+                <i class="mdi mdi-square-edit-outline selectable fs-1 edit-icon" @click="toggleVisibility('imgForm')"
+                  v-show="!isEditImageVisible"></i>
+                <form @submit.prevent="editRecipe('imgForm')" id="imgForm" v-show="isEditImageVisible">
                   <div class="form-floating">
                     <input type="url" id="editImg" class="form-control" placeholder="Image URL" v-model="editable.img"
                       onfocus="select()">
@@ -28,38 +28,54 @@
             <div class="d-flex flex-column w-100">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h3 v-show="!isEditTitleVisible">{{ recipe.title }} <i class="mdi mdi-square-edit-outline selectable" title="Edit Title"
-                      @click="toggleVisibility('titleForm')"></i></h3>
+                  <h3 v-show="!isEditTitleVisible">{{ recipe.title }} <i class="mdi mdi-square-edit-outline selectable"
+                      title="Edit Title" @click="toggleVisibility('titleForm')"></i></h3>
                   <form @submit.prevent="editRecipe('titleForm')" id="titleForm" v-show="isEditTitleVisible">
                     <div class="form-floating">
-                      <input type="text" id="editTitle" class="form-control" placeholder="Edit Title" v-model="editable.title">
+                      <input type="text" id="editTitle" class="form-control" placeholder="Edit Title"
+                        v-model="editable.title" onfocus="select()">
                       <label for="editTitle">Edit Title</label>
                     </div>
                   </form>
-                  <h6>{{ recipe.subtitle === "" ? 'Add subtitle' : recipe.subtitle }} <i
-                      class="mdi mdi-square-edit-outline selectable" title="Edit Subtitle"
-                      v-if="recipe.subtitle !== ''"></i><i class="mdi mdi-plus-outline selectable"
-                      title="Add Instructions" v-else></i></h6>
+                  <h6 v-show="!isEditSubtitleVisible">{{ recipe.subtitle === "" ? 'Add subtitle' : recipe.subtitle }} <i
+                      class="mdi mdi-square-edit-outline selectable" title="Edit Subtitle" v-if="recipe.subtitle !== ''"
+                      @click="toggleVisibility('subtitleForm')"></i><i class="mdi mdi-plus-outline selectable"
+                      title="Add Subtitle" @click="toggleVisibility('subtitleForm')" v-else></i></h6>
+                  <form @submit.prevent="editRecipe('subtitleForm')" id="subtitleForm" v-show="isEditSubtitleVisible">
+                    <div class="form-floating">
+                      <input type="text" id="editSubtitle" class="form-control" placeholder="Edit Subtitle"
+                        v-model="editable.subtitle" onfocus="select()">
+                      <label for="editSubtitle">Edit Subtitle</label>
+                    </div>
+                  </form>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="d-flex gap-5 flex-grow-1 py-3">
                 <div class="d-flex flex-column width-instructions">
                   <span>RECIPE INSTRUCTIONS</span>
-                  <div class="flex-grow-1 auto-scroll pt-3">{{ !recipe.instructions ? "Add instructions" :
-                      recipe.instructions
-                  }} <i class="mdi mdi-square-edit-outline selectable" title="Edit Instructions"
-                      v-if="recipe.instructions"></i><i class="mdi mdi-plus-outline selectable" title="Add Instructions"
-                      v-else></i></div>
+                  <div class="flex-grow-1 auto-scroll pt-3" v-show="!isEditInstructionsVisible"><span>{{
+                      !recipe.instructions ? "Add instructions" :
+                        recipe.instructions
+                  }}</span> <i class="mdi mdi-square-edit-outline selectable" title="Edit Instructions"
+                      v-if="recipe.instructions" @click="toggleVisibility('instructionsForm')"></i><i
+                      class="mdi mdi-plus-outline selectable" title="Add Instructions"
+                      @click="toggleVisibility('instructionsForm')" v-else></i>
+                  </div>
+                  <form @submit.prevent="editRecipe('instructionsForm')" id="instructionsForm" v-show="isEditInstructionsVisible">
+                    <div class="form-floating">
+                      <textarea id="editInstructions" class="form-control" placeholder="Edit Instructions"
+                        v-model="editable.instructions" onfocus="select()"></textarea>
+                      <label for="editInstructions">Edit Instructions</label>
+                    </div>
+                    <button type="submit">Save Changes</button>
+                  </form>
                 </div>
                 <div class="d-flex flex-column width-ingredients">
                   <span>RECIPE INGREDIENTS</span>
                   <div class="ingredients auto-scroll pt-3">
-                    <span v-for="i in ingredients">{{ i.quantity }}: {{ i.name }} <i
-                        class="mdi mdi-square-edit-outline selectable" title="Edit Ingredient"></i> <i
-                        class="mdi mdi-delete selectable" title="Delete Ingredient"></i></span>
-                    <div><span>Add Ingredient</span> <i class="mdi mdi-plus-outline selectable"
-                        title="Add Instructions"></i></div>
+                    <IngredientCard v-for="i in ingredients" :key="i.id" :ingredient="i" />
+                    <IngredientForm :recipeId="recipe.id" />
                   </div>
                 </div>
               </div>
@@ -93,58 +109,80 @@ import { AppState } from "../AppState";
 import { Recipe } from "../models/Recipe";
 import { recipesService } from "../services/RecipesService";
 import Pop from "../utils/Pop";
+import IngredientCard from "./IngredientCard.vue";
 
 export default {
-  props: {
-    recipe: { type: Recipe, required: true },
-    routeName: { type: String }
-  },
-  setup(props) {
-    const route = useRoute()
-    const editable = ref({})
-
-    watchEffect(() => {
-      editable.value = { ...props.recipe };
-    });
-    return {
-      route,
-      editable,
-      isEditTitleVisible: computed(() => AppState.isEditTitleVisible),
-      account: computed(() => AppState.account),
-      ingredients: computed(() => AppState.ingredients),
-      async toggleFavorite() {
-        try {
-          await recipesService.toggleFavorite(props.recipe.id)
-        }
-        catch (error) {
-          Pop.error(error.message, "[toggleFavorite]")
-        }
-      },
-      isFave() {
-        if (props.recipe.favoriteeIds.find(id => id === this.account.id)) {
-          return true
-        } else {
-          return false
-        }
-      },
-      async editRecipe(elementId) {
-        try {
-          // console.log("editing recipe from", elementId)
-          editable.value.id = props.recipe.id
-          await recipesService.editRecipe(editable.value)
-          this.toggleVisibility(elementId)
-          // editable.value = {}
-        }
-        catch (error) {
-          Pop.error(error.message, "[editRecipe]")
-        }
-      },
-      toggleVisibility(elementId) {
-        console.log("unhiding", elementId)
-        AppState.isEditTitleVisible = !AppState.isEditTitleVisible
-      }
-    }
-  }
+    props: {
+        recipe: { type: Recipe, required: true },
+        routeName: { type: String }
+    },
+    setup(props) {
+        const route = useRoute();
+        const editable = ref({});
+        watchEffect(() => {
+            editable.value = { ...props.recipe };
+        });
+        return {
+            route,
+            editable,
+            isEditTitleVisible: computed(() => AppState.isEditTitleVisible),
+            isEditSubtitleVisible: computed(() => AppState.isEditSubtitleVisible),
+            isEditImageVisible: computed(() => AppState.isEditImageVisible),
+            isEditInstructionsVisible: computed(() => AppState.isEditInstructionsVisible),
+            account: computed(() => AppState.account),
+            ingredients: computed(() => AppState.ingredients),
+            async toggleFavorite() {
+                try {
+                    await recipesService.toggleFavorite(props.recipe.id);
+                }
+                catch (error) {
+                    Pop.error(error.message, "[toggleFavorite]");
+                }
+            },
+            isFave() {
+                if (props.recipe.favoriteeIds.find(id => id === this.account.id)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            async editRecipe(elementId) {
+                try {
+                    // console.log("editing recipe from", elementId)
+                    editable.value.id = props.recipe.id;
+                    await recipesService.editRecipe(editable.value);
+                    this.toggleVisibility(elementId);
+                    // editable.value = {}
+                }
+                catch (error) {
+                    Pop.error(error.message, "[editRecipe]");
+                }
+            },
+            toggleVisibility(elementId) {
+                // console.log("unhiding", elementId)
+                switch (elementId) {
+                    case "titleForm":
+                        AppState.isEditTitleVisible = !AppState.isEditTitleVisible;
+                        document.getElementById(elementId).focus();
+                        break;
+                    case "subtitleForm":
+                        AppState.isEditSubtitleVisible = !AppState.isEditSubtitleVisible;
+                        document.getElementById(elementId).focus();
+                        break;
+                    case "imgForm":
+                        AppState.isEditImageVisible = !AppState.isEditImageVisible;
+                        document.getElementById(elementId).focus();
+                        break;
+                    case "instructionsForm":
+                        AppState.isEditInstructionsVisible = !AppState.isEditInstructionsVisible;
+                        document.getElementById(elementId).focus();
+                        break;
+                }
+            }
+        };
+    },
+    components: { IngredientCard }
 }
 </script>
 
@@ -159,10 +197,22 @@ export default {
   top: 2%;
 }
 
-.edit-icon {
+.edit-icon-div {
   position: absolute;
   left: 2%;
   top: 2%;
+}
+
+.edit-icon {
+  color: rgba(0, 0, 0, 0);
+  transition: 0.2s linear;
+}
+
+.pos-relative:hover .edit-icon {
+  text-shadow: 2px 0 2px rgba(0, 0, 0, 0.644), 0 2px 2px rgba(0, 0, 0, 0.644), -2px 0 2px rgba(0, 0, 0, 0.644), 0 -2px 2px rgba(0, 0, 0, 0.644), 0 0 10px rgba(255, 4, 4, 0.846);
+  color: rgb(241, 231, 231);
+  font-weight: 700;
+  letter-spacing: 0.035rem;
 }
 
 .favorite {
@@ -181,6 +231,10 @@ img {
   max-height: 60vh;
 }
 
+#editInstructions {
+  height: 32.4rem;
+}
+
 .width-instructions {
   width: 60%;
 
@@ -189,5 +243,10 @@ img {
 .width-ingredients {
   width: 40%;
 
+}
+
+.ingredients {
+  display: flex;
+  flex-direction: column;
 }
 </style>

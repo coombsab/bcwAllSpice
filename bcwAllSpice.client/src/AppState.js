@@ -12,5 +12,9 @@ export const AppState = reactive({
   /** @type {import('./models/Ingredient.js').Ingredient[]} */
   ingredients: [],
   search: "",
-  isEditTitleVisible: false
+  isEditTitleVisible: false,
+  isEditSubtitleVisible: false,
+  isEditImageVisible: false,
+  isEditInstructionsVisible: false,
+  isEditIngredientsVisible: false
 })
