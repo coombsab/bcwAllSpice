@@ -19,7 +19,7 @@ class RecipesService {
 
   async getMyRecipes() {
     AppState.recipes = []
-    const res = await api.get("api/recipes")
+    const res = await api.get("account/recipes")
     AppState.recipes = res.data.map(data => new Recipe(data))
 
   }

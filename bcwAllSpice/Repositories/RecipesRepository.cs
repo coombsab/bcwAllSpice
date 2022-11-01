@@ -16,18 +16,69 @@ public class RecipesRepository : RepositoryBase
     recipeData.Id = _db.ExecuteScalar<int>(sql, recipeData);
     return GetRecipeById(recipeData.Id);
   }
-  public List<Recipe> GetAllRecipes()
+  public List<Recipe> GetAllRecipes(int offset, int limit)
   {
     string sql = @"
     SELECT rec.*, acc.* FROM recipes rec
-    JOIN accounts acc ON acc.id = rec.creatorId;
+    JOIN accounts acc ON acc.id = rec.creatorId
+    ORDER by rec.updatedAt DESC
+    LIMIT @limit
+    OFFSET @offset;
     ";
-    // TODO AsList?  Why will ToList not work?
     List<Recipe> recipes = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) =>
     {
       recipe.Creator = profile;
       return recipe;
-    }).ToList();
+    }, new { offset, limit }).ToList();
+
+    sql = @"
+      SELECT acc.* FROM favorites fav
+      JOIN accounts acc ON acc.id = fav.accountId
+      WHERE recipeId = @recipeId
+    ";
+
+    recipes.ForEach(recipe =>
+    {
+      int recipeId = recipe.Id;
+      recipe.Favoritees = _db.Query<Profile>(sql, new { recipeId }).ToList();
+    });
+
+    sql = @"
+      SELECT accountId FROM favorites
+      WHERE recipeId = @recipeId
+    ";
+
+    recipes.ForEach(recipe =>
+    {
+      int recipeId = recipe.Id;
+      recipe.FavoriteeIds = _db.Query<string>(sql, new { recipeId }).ToList();
+    });
+
+    return recipes;
+  }
+
+  public List<Recipe> GetRecipesByAccount(string accountId, int offset, int limit)
+  {
+    // string sql = @"
+    //   SELECT * FROM recipes
+    //   WHERE creatorId = @accountId
+    // ";
+
+    // List<Recipe> recipes = _db.Query<Recipe>(sql, new { accountId }).ToList();
+    
+    string sql = @"
+    SELECT rec.*, acc.* FROM recipes rec
+    JOIN accounts acc ON acc.id = rec.creatorId
+    WHERE rec.creatorId = @accountId
+    ORDER by rec.updatedAt DESC
+    LIMIT @limit
+    OFFSET @offset;
+    ";
+    List<Recipe> recipes = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) =>
+    {
+      recipe.Creator = profile;
+      return recipe;
+    }, new { accountId, offset, limit }).ToList();
 
     sql = @"
       SELECT acc.* FROM favorites fav

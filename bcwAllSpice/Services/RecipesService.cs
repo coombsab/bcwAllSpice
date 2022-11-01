@@ -13,8 +13,16 @@ public class RecipesService {
     return _recipesRepository.CreateRecipe(recipeData);
   }
 
-  public List<Recipe> GetAllRecipes() {
-    return _recipesRepository.GetAllRecipes();
+  public List<Recipe> GetAllRecipes(string offsetStr, string limitStr) {
+    int offset = 0, limit = 12;
+    if (offsetStr != null) {
+      offset = int.Parse(offsetStr);
+    } 
+
+    if (limitStr != null) {
+      limit = int.Parse(limitStr);
+    }
+    return _recipesRepository.GetAllRecipes(offset, limit);
   }
 
   public Recipe GetRecipeById(int recipeId) {
@@ -23,6 +31,20 @@ public class RecipesService {
       throw new Exception("Could not find recipe.  Invalid ID.");
     }
     return recipe;
+  }
+
+  public List<Recipe> GetRecipesByAccount(string accountId, string offsetStr, string limitStr)
+  {
+    int offset = 0, limit = 12;
+    if (offsetStr != null) {
+      offset = int.Parse(offsetStr);
+    } 
+
+    if (limitStr != null) {
+      limit = int.Parse(limitStr);
+    }
+
+    return _recipesRepository.GetRecipesByAccount(accountId, offset, limit);
   }
 
   public FavRecipe GetFavRecipeById(int recipeId) {

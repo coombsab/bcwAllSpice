@@ -52,8 +52,7 @@ INSERT INTO
         category,
         creatorId
     )
-VALUES
-(
+VALUES (
         "Food",
         "Do stuff",
         "http://thiscatdoesnotexist.com",
@@ -76,3 +75,13 @@ FROM favorites
 WHERE
     accountId = "633f47dbeb516186a541c5e7"
     AND recipeId = 1;
+
+SELECT rec.*, acc.*
+FROM recipes rec
+    JOIN accounts acc ON acc.id = rec.creatorId
+ORDER by rec.updatedAt desc
+LIMIT 5
+OFFSET 0;
+
+SELECT * FROM recipes
+WHERE creatorId = "633cafd74ce51ed030ce6d38";
