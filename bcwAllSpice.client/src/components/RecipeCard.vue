@@ -13,9 +13,11 @@
       </div>
     </div>
 
-    <i class="mdi mdi-heart-outline heart selectable rounded fs-3" type="button" @click="toggleFavorite()"
+    <div class="heart selectable rounded fs-3" v-if="user.isAuthenticated">
+      <i class="mdi mdi-heart-outline" type="button" @click="toggleFavorite()"
       v-if="!isFave()"></i>
-    <i class="mdi mdi-heart heart selectable rounded favorite fs-3" type="button" @click="toggleFavorite()" v-else></i>
+      <i class="mdi mdi-heart favorite" type="button" @click="toggleFavorite()" v-else></i>
+    </div>
 
 
   </div>
@@ -38,7 +40,7 @@ export default {
   setup(props) {
 
     return {
-
+      user: computed(() => AppState.user),
       account: computed(() => AppState.account),
       async toggleFavorite() {
         try {

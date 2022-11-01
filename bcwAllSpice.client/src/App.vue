@@ -4,7 +4,7 @@
   </header>
   <main>
     <router-view />
-    <div class="dot selectable elevation-3" type="button" data-bs-toggle="modal" data-bs-target="#createRecipeModal">
+    <div class="dot selectable elevation-3" type="button" data-bs-toggle="modal" data-bs-target="#createRecipeModal" v-if="user.isAuthenticated">
       <i class="mdi mdi-plus fs-1 " title="Add Recipe"></i>
     </div>
   </main>
@@ -21,6 +21,7 @@ export default {
   setup() {
     return {
       appState: computed(() => AppState),
+      user: computed(() => AppState.user)
     }
   },
   components: { Navbar, CreateRecipeModal }

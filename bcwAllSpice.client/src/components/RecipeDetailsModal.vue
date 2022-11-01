@@ -7,13 +7,13 @@
           <div class="d-flex flex-wrap flex-md-nowrap justify-content-between gap-3">
             <div class="pos-relative">
               <div class="image" :style="{ backgroundImage: `url(${recipe.img})` }"></div>
-              <div class="heart" v-if="routeName != 'Favorites'">
+              <div class="heart" v-if="routeName != 'Favorites' && user.isAuthenticated">
                 <i class="mdi mdi-heart-outline selectable rounded fs-1 text-visible" type="button"
                   @click="toggleFavorite()" v-if="!isFave()"></i>
                 <i class="mdi mdi-heart selectable rounded favorite fs-1 text-visible" type="button"
                   @click="toggleFavorite()" v-else></i>
               </div>
-              <div class="edit-icon-div d-flex align-items-center">
+              <div class="edit-icon-div d-flex align-items-center" v-if="recipe.creatorId === account.id">
                 <i class="mdi mdi-square-edit-outline selectable fs-1 edit-icon" @click="toggleVisibility('imgForm')"
                   v-show="!isEditImageVisible"></i>
                 <form @submit.prevent="editRecipe('imgForm')" id="imgForm" v-show="isEditImageVisible">
@@ -32,7 +32,7 @@
                     <div>
                       <h3 v-show="!isEditTitleVisible" class="m-0 mb-md-2">{{ recipe.title }} <i
                           class="mdi mdi-square-edit-outline selectable" title="Edit Title"
-                          @click="toggleVisibility('titleForm')"></i></h3>
+                          @click="toggleVisibility('titleForm')" v-if="recipe.creatorId === account.id"></i></h3>
                       <form @submit.prevent="editRecipe('titleForm')" id="titleForm" v-show="isEditTitleVisible">
                         <div class="form-floating">
                           <input type="text" id="editTitle" class="form-control" placeholder="Edit Title"
@@ -44,14 +44,9 @@
                     <div>
                       <p class="m-0 mb-2" v-show="!isEditCategoryVisible">({{ recipe.category }}) <i
                           class="mdi mdi-square-edit-outline selectable" title="Edit Category"
-                          @click="toggleVisibility('categoryForm')"></i></p>
+                          @click="toggleVisibility('categoryForm')" v-if="recipe.creatorId === account.id"></i></p>
                       <form @submit.prevent="editRecipe('categoryForm')" id="categoryForm"
                         v-show="isEditCategoryVisible">
-                        <!-- <div class="form-floating">
-                          <input type="text" id="editCategory" class="form-control" placeholder="Edit Category"
-                            v-model="editable.category" onfocus="select()">
-                          <label for="editCategory">Edit Category</label>
-                        </div> -->
                         <div class="input-group">
                           <div class="form-floating flex-grow-1">
                             <select class="form-select" id="editCategory" aria-label="Select a Category" required
@@ -66,10 +61,10 @@
                       </form>
                     </div>
                   </div>
-                  <h6 v-show="!isEditSubtitleVisible">{{ recipe.subtitle === "" ? 'Add subtitle' : recipe.subtitle }} <i
+                  <h6 v-show="!isEditSubtitleVisible">{{ recipe.subtitle === "" ? 'Add subtitle' : recipe.subtitle }} <span v-if="recipe.creatorId === account.id"><i
                       class="mdi mdi-square-edit-outline selectable" title="Edit Subtitle" v-if="recipe.subtitle !== ''"
                       @click="toggleVisibility('subtitleForm')"></i><i class="mdi mdi-plus-outline selectable"
-                      title="Add Subtitle" @click="toggleVisibility('subtitleForm')" v-else></i></h6>
+                      title="Add Subtitle" @click="toggleVisibility('subtitleForm')" v-else></i></span></h6>
                   <form @submit.prevent="editRecipe('subtitleForm')" id="subtitleForm" v-show="isEditSubtitleVisible">
                     <div class="form-floating">
                       <input type="text" id="editSubtitle" class="form-control" placeholder="Edit Subtitle"
@@ -86,10 +81,10 @@
                   <div class="flex-grow-1 auto-scroll pt-3" v-show="!isEditInstructionsVisible"><span>{{
                       !recipe.instructions ? "Add instructions" :
                         recipe.instructions
-                  }}</span> <i class="mdi mdi-square-edit-outline selectable" title="Edit Instructions"
+                  }}</span> <span v-if="recipe.creatorId === account.id"><i class="mdi mdi-square-edit-outline selectable" title="Edit Instructions"
                       v-if="recipe.instructions" @click="toggleVisibility('instructionsForm')"></i><i
                       class="mdi mdi-plus-outline selectable" title="Add Instructions"
-                      @click="toggleVisibility('instructionsForm')" v-else></i>
+                      @click="toggleVisibility('instructionsForm')" v-else></i></span>
                   </div>
                   <form @submit.prevent="editRecipe('instructionsForm')" id="instructionsForm"
                     v-show="isEditInstructionsVisible">
@@ -107,13 +102,14 @@
                     <div class="d-flex flex-column flex-grow-1 auto-scroll">
                       <IngredientCard v-for="i in ingredients" :key="i.id" :ingredient="i" />
                     </div>
-                    <IngredientForm :recipeId="recipe.id" />
+                    <IngredientForm :recipeId="recipe.id" v-if="recipe.creatorId === account.id" />
                   </div>
                 </div>
               </div>
               <div class="w-100">
                 <div class="d-flex justify-content-between align-items-center">
-                  <button type="button" class="btn btn-danger" @click="deleteRecipe()">Delete Recipe</button>
+                  <button type="button" class="btn btn-danger" @click="deleteRecipe()" v-if="recipe.creatorId === account.id">Delete Recipe</button>
+                  <div v-else></div>
                   <span class="text-end">created by {{ recipe.creator.name }}</span>
                 </div>
               </div>
@@ -150,6 +146,8 @@ export default {
     return {
       route,
       editable,
+      user: computed(() => AppState.user),
+      account: computed(() => AppState.account),
       categories: computed(() => AppState.categories.sort()),
       isEditTitleVisible: computed(() => AppState.isEditTitleVisible),
       isEditSubtitleVisible: computed(() => AppState.isEditSubtitleVisible),

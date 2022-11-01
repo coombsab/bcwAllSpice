@@ -36,7 +36,7 @@ export default {
               const filterByTitle = AppState.recipes.filter(recipe => recipe.title.toUpperCase().includes(AppState.search.toUpperCase()))
               const filterBySubtitle = AppState.recipes.filter(recipe => recipe.subtitle.toUpperCase().includes(AppState.search.toUpperCase()))
               const finalSearchFilter = [...new Set([...filterByCategory, ...filterByTitle, ...filterBySubtitle])]
-              return finalSearchFilter
+              return finalSearchFilter.filter(recipe => recipe.creatorId === AppState.account.id)
             })
         };
     },
