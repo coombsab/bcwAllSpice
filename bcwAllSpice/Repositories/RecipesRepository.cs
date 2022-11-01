@@ -14,7 +14,7 @@ public class RecipesRepository : RepositoryBase
       SELECT LAST_INSERT_ID();
     ";
     recipeData.Id = _db.ExecuteScalar<int>(sql, recipeData);
-    return recipeData;
+    return GetRecipeById(recipeData.Id);
   }
   public List<Recipe> GetAllRecipes()
   {
@@ -23,7 +23,8 @@ public class RecipesRepository : RepositoryBase
     JOIN accounts acc ON acc.id = rec.creatorId;
     ";
     // TODO AsList?  Why will ToList not work?
-    List<Recipe> recipes = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) => {
+    List<Recipe> recipes = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) =>
+    {
       recipe.Creator = profile;
       return recipe;
     }).ToList();
@@ -34,7 +35,8 @@ public class RecipesRepository : RepositoryBase
       WHERE recipeId = @recipeId
     ";
 
-    recipes.ForEach(recipe => {
+    recipes.ForEach(recipe =>
+    {
       int recipeId = recipe.Id;
       recipe.Favoritees = _db.Query<Profile>(sql, new { recipeId }).ToList();
     });
@@ -44,7 +46,8 @@ public class RecipesRepository : RepositoryBase
       WHERE recipeId = @recipeId
     ";
 
-    recipes.ForEach(recipe => {
+    recipes.ForEach(recipe =>
+    {
       int recipeId = recipe.Id;
       recipe.FavoriteeIds = _db.Query<string>(sql, new { recipeId }).ToList();
     });
@@ -52,27 +55,48 @@ public class RecipesRepository : RepositoryBase
     return recipes;
   }
 
-  public Recipe GetRecipeById(int recipeId) {
+  public Recipe GetRecipeById(int recipeId)
+  {
     string sql = @"
       SELECT rec.*, acc.* FROM recipes rec
       JOIN accounts acc ON acc.id = rec.creatorId
       WHERE rec.id = @recipeId;
     ";
 
-    return _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) => {
+    Recipe recipe = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) =>
+    {
       recipe.Creator = profile;
       return recipe;
     }, new { recipeId }).FirstOrDefault();
+
+    sql = @"
+      SELECT acc.* FROM favorites fav
+      JOIN accounts acc ON acc.id = fav.accountId
+      WHERE recipeId = @Id
+    ";
+
+    recipe.Favoritees = _db.Query<Profile>(sql, recipe).ToList();
+
+    sql = @"
+      SELECT accountId FROM favorites
+      WHERE recipeId = @Id
+    ";
+
+    recipe.FavoriteeIds = _db.Query<string>(sql, recipe).ToList();
+
+    return recipe;
   }
 
-  public FavRecipe GetFavRecipeById(int recipeId) {
+  public FavRecipe GetFavRecipeById(int recipeId)
+  {
     string sql = @"
       SELECT rec.*, acc.* FROM recipes rec
       JOIN accounts acc ON acc.id = rec.creatorId
       WHERE rec.id = @recipeId;
     ";
 
-    FavRecipe recipe = _db.Query<FavRecipe, Profile, FavRecipe>(sql, (recipe, profile) => {
+    FavRecipe recipe = _db.Query<FavRecipe, Profile, FavRecipe>(sql, (recipe, profile) =>
+    {
       recipe.Creator = profile;
       return recipe;
     }, new { recipeId }).FirstOrDefault();
@@ -96,17 +120,20 @@ public class RecipesRepository : RepositoryBase
     return recipe;
   }
 
-  public Recipe EditRecipe(Recipe recipe) {
+  public Recipe EditRecipe(Recipe recipe)
+  {
     string sql = @"
       UPDATE recipes
       SET title = @Title, instructions = @Instructions, img = @Img, category = @Category, subtitle = @Subtitle
       WHERE id = @Id;
     ";
     var rows = _db.Execute(sql, recipe);
-    if (rows < 1) {
+    if (rows < 1)
+    {
       throw new Exception("Changes were not saved.");
     }
-    if (rows > 1) {
+    if (rows > 1)
+    {
       throw new Exception("Something went wrong with the edit.  Contact your DBA.");
     }
     return recipe;
@@ -120,10 +147,12 @@ public class RecipesRepository : RepositoryBase
     ";
 
     var rows = _db.Execute(sql, new { recipeId });
-    if (rows < 1) {
+    if (rows < 1)
+    {
       throw new Exception("Recipe probably was not deleted.");
     }
-    if (rows > 1) {
+    if (rows > 1)
+    {
       throw new Exception("Something went wrong with the delete.  Contact your DBA.");
     }
   }
