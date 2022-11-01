@@ -1,6 +1,6 @@
 <template>
   <div class="recipe-card text-visible elevation-2" :style="{ backgroundImage: `url(${recipe?.img})` }">
-    <div class="layer selectable p-3" data-bs-toggle="modal" :data-bs-target="'#recipeDetailsModal' + recipe.id"
+    <div class="layer selectable p-3" title="Recipe Details" data-bs-toggle="modal" :data-bs-target="'#recipeDetailsModal' + recipe.id"
       @click="getIngredientsByRecipeId()">
       <div class="card-content">
         <div class="d-flex align-items-center fs-3">
@@ -15,8 +15,8 @@
 
     <div class="heart selectable rounded fs-3" v-if="user.isAuthenticated">
       <i class="mdi mdi-heart-outline" type="button" @click="toggleFavorite()"
-      v-if="!isFave()"></i>
-      <i class="mdi mdi-heart favorite" type="button" @click="toggleFavorite()" v-else></i>
+      v-if="!isFave()" title="Favorite REcipe"></i>
+      <i class="mdi mdi-heart favorite" type="button" @click="toggleFavorite()" v-else title="Unfavorite Recipe"></i>
     </div>
 
 

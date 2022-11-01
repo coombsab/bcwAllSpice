@@ -9,7 +9,7 @@
         <input class="form-control" type="text" id="floatingName" placeholder="Name" v-model="editable.name"> 
         <label for="floatingName">Name</label>
       </div>
-      <button class="btn btn-outline-dark" title="Add Instructions"><i class="mdi mdi-plus-outline selectable fs-3"></i></button>
+      <button class="btn btn-outline-dark" title="Add Ingredient"><i class="mdi mdi-plus-outline selectable fs-3"></i></button>
     </div>
   </form>
 </template>

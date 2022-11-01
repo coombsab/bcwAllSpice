@@ -9,13 +9,13 @@
               <div class="image" :style="{ backgroundImage: `url(${recipe.img})` }"></div>
               <div class="heart" v-if="routeName != 'Favorites' && user.isAuthenticated">
                 <i class="mdi mdi-heart-outline selectable rounded fs-1 text-visible" type="button"
-                  @click="toggleFavorite()" v-if="!isFave()"></i>
+                  @click="toggleFavorite()" v-if="!isFave()" title="Favorite Recipe"></i>
                 <i class="mdi mdi-heart selectable rounded favorite fs-1 text-visible" type="button"
-                  @click="toggleFavorite()" v-else></i>
+                  @click="toggleFavorite()" v-else title="Unfavorite Recipe"></i>
               </div>
               <div class="edit-icon-div d-flex align-items-center" v-if="recipe.creatorId === account.id">
                 <i class="mdi mdi-square-edit-outline selectable fs-1 edit-icon" @click="toggleVisibility('imgForm')"
-                  v-show="!isEditImageVisible"></i>
+                  v-show="!isEditImageVisible" title="Edit Image"></i>
                 <form @submit.prevent="editRecipe('imgForm')" id="imgForm" v-show="isEditImageVisible">
                   <div class="form-floating">
                     <input type="url" id="editImg" class="form-control" placeholder="Image URL" v-model="editable.img"

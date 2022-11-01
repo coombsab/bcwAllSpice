@@ -1,7 +1,7 @@
 <template>
   <div class="mb-1 d-flex justify-content-between ingredient align-items-center">
     <span>{{ ingredient.quantity.toUpperCase() }}: {{ ingredient.name.toUpperCase() }}</span>
-    <i class="mdi mdi-delete selectable delete-icon" title="Delete Ingredient" @click="deleteIngredient()"></i>
+    <i class="mdi mdi-delete selectable delete-icon" :title="'Delete ' + ingredient.quantity + ': ' + ingredient.name" @click="deleteIngredient()"></i>
   </div>
 
 </template>

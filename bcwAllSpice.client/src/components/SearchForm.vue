@@ -2,7 +2,7 @@
   <form @submit.prevent="handleSubmit()">
     <div class="input-group">
       <input type="text" class="form-control" placeholder="Search..." v-model="editable.search" onfocus="this.select()">
-      <button class="btn btn-info" type="submit"><i class="mdi mdi-magnify"></i></button>
+      <button class="btn btn-info" type="submit" title="Submit Search"><i class="mdi mdi-magnify"></i></button>
     </div>
   </form>
 </template>
