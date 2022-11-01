@@ -14,9 +14,7 @@
       <div class="form-floating flex-grow-1">
         <select class="form-select" id="floatingSelect" aria-label="Select a Category" required
           v-model="editable.category">
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Dinner">Dinner</option>
+          <option v-for="c in categories" :value="c">{{c}}</option>
         </select>
         <label for="floatingSelect">Category</label>
       </div>
@@ -51,8 +49,10 @@
 </template>
 
 <script>
+import { computed } from "@vue/reactivity";
 import { Modal } from "bootstrap";
 import { ref } from "vue";
+import { AppState } from "../AppState";
 import { recipesService } from "../services/RecipesService";
 import Pop from "../utils/Pop";
 
@@ -61,6 +61,7 @@ export default {
     const editable = ref({})
     return {
       editable,
+      categories: computed(() => AppState.categories.sort()),
       async handleSubmit() {
         try {
           // console.log("handling submit", editable.value)

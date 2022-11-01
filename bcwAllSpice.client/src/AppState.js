@@ -17,5 +17,6 @@ export const AppState = reactive({
   isEditImageVisible: false,
   isEditInstructionsVisible: false,
   isEditIngredientsVisible: false,
-  isEditCategoryVisible: false
+  isEditCategoryVisible: false,
+  categories: ["Breakfast", "Lunch", "Dinner", "Mexican", "Italian", "Chinese", "Cheese", "Specialty coffee"]
 })

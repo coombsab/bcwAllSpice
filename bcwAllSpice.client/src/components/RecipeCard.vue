@@ -71,7 +71,7 @@ export default {
         AppState.isEditSubtitleVisible = false
         AppState.isEditImageVisible = false
         AppState.isEditInstructionsVisible = false
-        // AppState.isEditIngredientVisible = false
+        AppState.isEditCategoryVisible = false
       }
     };
   },
@@ -81,7 +81,7 @@ export default {
 
 <style scoped lang="scss">
 .recipe-card {
-  width: 30vw;
+  width: 90vw;
   height: 40vh;
   background-position: center;
   background-size: cover;
@@ -109,5 +109,16 @@ export default {
   flex-direction: column;
   height: 100%;
   justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+  .recipe-card {
+    width: 30vw;
+    height: 40vh;
+    background-position: center;
+    background-size: cover;
+    border-radius: 0.5rem;
+    position: relative;
+  }
 }
 </style>

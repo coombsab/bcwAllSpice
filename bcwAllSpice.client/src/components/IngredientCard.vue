@@ -1,7 +1,7 @@
 <template>
-  <div class="mb-1 d-flex gap-2 flex-wrap justify-content-between ingredient">
+  <div class="mb-1 d-flex justify-content-between ingredient align-items-center">
     <span>{{ ingredient.quantity.toUpperCase() }}: {{ ingredient.name.toUpperCase() }}</span>
-    <i class="mdi mdi-delete selectable on-hover" title="Delete Ingredient" @click="deleteIngredient()"></i>
+    <i class="mdi mdi-delete selectable delete-icon" title="Delete Ingredient" @click="deleteIngredient()"></i>
   </div>
 
 </template>
@@ -51,9 +51,20 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.ingredient:hover {
-  background-color: rgba(10, 10, 10, 0.15);
-  border-radius: 0.5rem;
-  padding: 0.25rem;
+@media (min-width: 768px) {
+  .delete-icon {
+    color: rgba(10, 10, 10, 0);
+  }
+
+  .ingredient:hover .delete-icon {
+    color: rgb(10, 10, 10);
+    transition: 0.3s linear;
+  }
+
+  .ingredient:hover {
+    background-color: rgba(10, 10, 10, 0.15);
+    border-radius: 0.5rem;
+    padding: 0 0.25rem;
+  }
 }
 </style>

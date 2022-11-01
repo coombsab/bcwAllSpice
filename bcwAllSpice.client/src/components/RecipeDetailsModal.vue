@@ -1,12 +1,12 @@
 <template>
   <div class="modal fade" :id="'recipeDetailsModal' + recipe.id" tabindex="-1"
     :aria-labelledby="'recipeDetailsModalLabel' + recipe.id" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-fullscreen-md-down elevation-3">
       <div class="modal-content">
-        <div class="modal-body">
-          <div class="d-flex justify-content-between gap-3">
+        <div class="modal-body p-0">
+          <div class="d-flex flex-wrap flex-md-nowrap justify-content-between gap-3">
             <div class="pos-relative">
-              <img :src="recipe.img" :alt="recipe.title">
+              <div class="image" :style="{ backgroundImage: `url(${recipe.img})` }"></div>
               <div class="heart" v-if="routeName != 'Favorites'">
                 <i class="mdi mdi-heart-outline selectable rounded fs-1 text-visible" type="button"
                   @click="toggleFavorite()" v-if="!isFave()"></i>
@@ -25,12 +25,12 @@
                 </form>
               </div>
             </div>
-            <div class="d-flex flex-column w-100">
+            <div class="d-flex flex-column w-100 p-3">
               <div class="d-flex justify-content-between">
                 <div>
                   <div class="d-flex gap-2 align-items-center flex-wrap">
                     <div>
-                      <h3 v-show="!isEditTitleVisible">{{ recipe.title }} <i
+                      <h3 v-show="!isEditTitleVisible" class="m-0 mb-md-2">{{ recipe.title }} <i
                           class="mdi mdi-square-edit-outline selectable" title="Edit Title"
                           @click="toggleVisibility('titleForm')"></i></h3>
                       <form @submit.prevent="editRecipe('titleForm')" id="titleForm" v-show="isEditTitleVisible">
@@ -42,14 +42,26 @@
                       </form>
                     </div>
                     <div>
-                      <p class="m-0" v-show="!isEditCategoryVisible">({{ recipe.category }}) <i
+                      <p class="m-0 mb-2" v-show="!isEditCategoryVisible">({{ recipe.category }}) <i
                           class="mdi mdi-square-edit-outline selectable" title="Edit Category"
                           @click="toggleVisibility('categoryForm')"></i></p>
-                      <form @submit.prevent="editRecipe('categoryForm')" id="categoryForm" v-show="isEditCategoryVisible">
-                        <div class="form-floating">
+                      <form @submit.prevent="editRecipe('categoryForm')" id="categoryForm"
+                        v-show="isEditCategoryVisible">
+                        <!-- <div class="form-floating">
                           <input type="text" id="editCategory" class="form-control" placeholder="Edit Category"
                             v-model="editable.category" onfocus="select()">
                           <label for="editCategory">Edit Category</label>
+                        </div> -->
+                        <div class="input-group">
+                          <div class="form-floating flex-grow-1">
+                            <select class="form-select" id="editCategory" aria-label="Select a Category" required
+                              v-model="editable.category">
+                              <option v-for="c in categories" :value="c">{{ c }}</option>
+                            </select>
+                            <label for="editCategory">Category</label>
+                          </div>
+                          <button class="btn btn-outline-dark"><i class="mdi mdi-plus-outline"
+                              title="Submit Category Change"></i></button>
                         </div>
                       </form>
                     </div>
@@ -70,7 +82,7 @@
               </div>
               <div class="d-flex gap-5 flex-grow-1 py-3">
                 <div class="d-flex flex-column width-instructions">
-                  <span>RECIPE INSTRUCTIONS</span>
+                  <span><strong>RECIPE INSTRUCTIONS</strong></span>
                   <div class="flex-grow-1 auto-scroll pt-3" v-show="!isEditInstructionsVisible"><span>{{
                       !recipe.instructions ? "Add instructions" :
                         recipe.instructions
@@ -86,31 +98,25 @@
                         v-model="editable.instructions" onfocus="select()"></textarea>
                       <label for="editInstructions">Edit Instructions</label>
                     </div>
-                    <button type="submit">Save Changes</button>
+                    <button type="submit" class="btn btn-outline-dark">Save Changes</button>
                   </form>
                 </div>
                 <div class="d-flex flex-column width-ingredients">
-                  <span>RECIPE INGREDIENTS</span>
-                  <div class="ingredients auto-scroll pt-3">
-                    <IngredientCard v-for="i in ingredients" :key="i.id" :ingredient="i" />
+                  <span><strong>RECIPE INGREDIENTS</strong></span>
+                  <div class="ingredients pt-3">
+                    <div class="d-flex flex-column flex-grow-1 auto-scroll">
+                      <IngredientCard v-for="i in ingredients" :key="i.id" :ingredient="i" />
+                    </div>
                     <IngredientForm :recipeId="recipe.id" />
                   </div>
                 </div>
               </div>
               <div class="w-100">
-                <div class="d-flex justify-content-end">
-                  <span>created by {{ recipe.creator.name }}</span>
+                <div class="d-flex justify-content-between align-items-center">
+                  <button type="button" class="btn btn-danger" @click="deleteRecipe()">Delete Recipe</button>
+                  <span class="text-end">created by {{ recipe.creator.name }}</span>
                 </div>
               </div>
-            </div>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <div class="d-flex justify-content-between align-items-center w-100">
-            <button type="button" class="btn btn-danger" @click="deleteRecipe()">Delete Recipe</button>
-            <div class="d-flex gap-3">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
@@ -144,6 +150,7 @@ export default {
     return {
       route,
       editable,
+      categories: computed(() => AppState.categories.sort()),
       isEditTitleVisible: computed(() => AppState.isEditTitleVisible),
       isEditSubtitleVisible: computed(() => AppState.isEditSubtitleVisible),
       isEditImageVisible: computed(() => AppState.isEditImageVisible),
@@ -227,6 +234,7 @@ export default {
 <style scoped lang="scss">
 .pos-relative {
   position: relative;
+  width: 100%;
 }
 
 .heart {
@@ -242,49 +250,78 @@ export default {
 }
 
 .edit-icon {
-  color: rgba(0, 0, 0, 0);
-  transition: 0.2s linear;
-}
-
-.pos-relative:hover .edit-icon {
   text-shadow: 2px 0 2px rgba(0, 0, 0, 0.644), 0 2px 2px rgba(0, 0, 0, 0.644), -2px 0 2px rgba(0, 0, 0, 0.644), 0 -2px 2px rgba(0, 0, 0, 0.644), 0 0 10px rgba(255, 4, 4, 0.846);
   color: rgb(241, 231, 231);
   font-weight: 700;
   letter-spacing: 0.035rem;
 }
 
+
 .favorite {
   color: fuchsia;
-}
-
-img {
-  max-width: 20vw;
 }
 
 .auto-scroll {
   overflow-y: auto;
 }
 
-img {
-  max-height: 60vh;
+.image {
+  height: 60vh;
+  width: 100%;
+  background-position: center;
+  background-size: cover;
 }
 
 #editInstructions {
   height: 32.4rem;
 }
 
+.ingredients {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .width-instructions {
-  width: 60%;
+  width: 50%;
 
 }
 
 .width-ingredients {
-  width: 40%;
+  width: 50%;
 
 }
 
-.ingredients {
-  display: flex;
-  flex-direction: column;
+@media (min-width: 768px) {
+  .width-instructions {
+    width: 60%;
+
+  }
+
+  .width-ingredients {
+    width: 40%;
+
+  }
+
+  .pos-relative {
+    width: 50%;
+  }
+
+  .image {
+    border-radius: 0.375rem 0 0 0.375rem;
+  }
+
+  .pos-relative:hover .edit-icon {
+    text-shadow: 2px 0 2px rgba(0, 0, 0, 0.644), 0 2px 2px rgba(0, 0, 0, 0.644), -2px 0 2px rgba(0, 0, 0, 0.644), 0 -2px 2px rgba(0, 0, 0, 0.644), 0 0 10px rgba(255, 4, 4, 0.846);
+    color: rgb(241, 231, 231);
+    font-weight: 700;
+    letter-spacing: 0.035rem;
+  }
+
+  .edit-icon {
+    color: rgba(0, 0, 0, 0);
+    transition: 0.2s linear;
+    text-shadow: none;
+  }
 }
 </style>

@@ -29,7 +29,7 @@ export default {
 <style lang="scss">
 @import "./assets/scss/main.scss";
 
-:root{
+:root {
   --main-height: calc(100vh - 32px - 64px);
 }
 
@@ -40,6 +40,7 @@ main {
 .circle {
   border-radius: 50%;
 }
+
 .dot {
   border-radius: 50%;
   height: 3rem;

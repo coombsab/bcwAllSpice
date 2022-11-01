@@ -9,7 +9,14 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: loadPage('HomePage')
+    component: loadPage('HomePage'),
+    children: [
+      {
+        path: '/:recipeId',
+        name: 'RecipeDetails',
+        component: 'RecipeDetailsModal'
+      }
+    ]
   },
   {
     path: '/myrecipes',
