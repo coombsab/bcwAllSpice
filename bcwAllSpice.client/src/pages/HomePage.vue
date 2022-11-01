@@ -3,8 +3,8 @@
     <div class="home-content d-flex flex-wrap gap-5 px-3 justify-content-evenly py-5 mt-5" v-if="recipes.length > 0">
       <RecipeCard v-for="r in recipes" :key="r.id" :recipe="r" />
     </div>
-    <div v-else>
-      <span class="fadeIn">No recipes currently available, please add some!</span>
+    <div class="d-flex flex-column flex-grow-1" v-else>
+      <span class="fadeIn m-auto fs-1 fw-700">No recipes currently available, please add some!</span>
     </div>
   </section>
 </template>
@@ -57,7 +57,7 @@ export default {
   }
   
   .fadeIn {
-    animation: fadeIn ease 12s;
+    animation: fadeIn ease 8s;
   }
 
   @keyframes fadeIn {
