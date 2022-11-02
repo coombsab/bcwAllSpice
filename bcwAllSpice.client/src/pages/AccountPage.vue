@@ -14,21 +14,27 @@ import { computed } from 'vue'
 import { AppState } from '../AppState'
 import EditAccountForm from "../components/EditAccountForm.vue";
 export default {
-    setup() {
-        return {
-            account: computed(() => AppState.account)
-        };
-    },
-    components: { EditAccountForm }
+  setup() {
+    return {
+      account: computed(() => AppState.account)
+    };
+  },
+  components: { EditAccountForm }
 }
 </script>
 
 <style scoped>
 img {
-  max-width: 100px;
+  max-width: 300px;
 }
 
 .edits {
-  width: 50%;
+  width: 90%;
+}
+
+@media (min-width: 768px) {
+  .edits {
+    width: 50%;
+  }
 }
 </style>
