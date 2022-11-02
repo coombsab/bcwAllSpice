@@ -18,5 +18,5 @@ export const AppState = reactive({
   isEditInstructionsVisible: false,
   isEditIngredientsVisible: false,
   isEditCategoryVisible: false,
-  categories: ["Breakfast", "Lunch", "Dinner", "Mexican", "Italian", "Chinese", "Cheese", "Specialty coffee"]
+  categories: ["Breakfast", "Lunch", "Dinner", "Dessert", "Mexican", "Italian", "Chinese", "Cheese", "Specialty coffee"]
 })
