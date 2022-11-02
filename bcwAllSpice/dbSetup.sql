@@ -85,3 +85,5 @@ OFFSET 0;
 
 SELECT * FROM recipes
 WHERE creatorId = "633cafd74ce51ed030ce6d38";
+
+ALTER TABLE accounts MODIFY picture MEDIUMTEXT;

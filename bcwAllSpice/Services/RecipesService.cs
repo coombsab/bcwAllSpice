@@ -3,6 +3,9 @@ namespace bcwAllSpice.Services;
 public class RecipesService {
   private readonly RecipesRepository _recipesRepository;
 
+  private const int OFFSET_DEFAULT = 0;
+  private const int LIMIT_DEFAULT = 100;
+
   public RecipesService(RecipesRepository recipesRepository)
   {
     _recipesRepository = recipesRepository;
@@ -14,7 +17,7 @@ public class RecipesService {
   }
 
   public List<Recipe> GetAllRecipes(string offsetStr, string limitStr) {
-    int offset = 0, limit = 12;
+    int offset = OFFSET_DEFAULT, limit = LIMIT_DEFAULT;
     if (offsetStr != null) {
       offset = int.Parse(offsetStr);
     } 
@@ -35,7 +38,7 @@ public class RecipesService {
 
   public List<Recipe> GetRecipesByAccount(string accountId, string offsetStr, string limitStr)
   {
-    int offset = 0, limit = 12;
+    int offset = OFFSET_DEFAULT, limit = LIMIT_DEFAULT;
     if (offsetStr != null) {
       offset = int.Parse(offsetStr);
     } 

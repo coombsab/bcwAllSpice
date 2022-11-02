@@ -32,6 +32,19 @@ public class AccountController : ControllerBase
     }
   }
 
+  [HttpPut]
+  [Authorize]
+  public async Task<ActionResult<Account>> UpdateAccount([FromBody] Account accountData) {
+    try {
+      Account userInfo = await _auth0Provider.GetUserInfoAsync<Account>(HttpContext);
+      Account profile = _accountService.UpdateAccount(accountData, userInfo.Id);
+      return Ok(profile);
+    }
+    catch(Exception e) {
+      return BadRequest(e.Message);
+    }
+  }
+
   [HttpGet("favorites")]
   [Authorize]
   public async Task<ActionResult<List<FavRecipe>>> GetFavorites()
