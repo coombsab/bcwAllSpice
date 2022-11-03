@@ -4,24 +4,40 @@ import { Recipe } from "../models/Recipe"
 import { api } from "./AxiosService"
 
 class RecipesService {
-  async getAllRecipes() {
+  async getAllRecipes(query) {
     AppState.recipes = []
-    const res = await api.get("api/recipes")
+    const res = await api.get("api/recipes", { params: query })
     AppState.recipes = res.data.map(data => new Recipe(data))
+    this.setNext()
+    this.setPrevious()
   }
 
-  async getFavoriteRecipes() {
-    AppState.recipes = []
-    const res = await api.get("account/favorites")
-    AppState.recipes = res.data.map(data => new Recipe(data))
-
+  setNext() {
+    AppState.hasNext = AppState.recipes.length === 18
   }
 
-  async getMyRecipes() {
-    AppState.recipes = []
-    const res = await api.get("account/recipes")
-    AppState.recipes = res.data.map(data => new Recipe(data))
+  setPrevious() {
+    if (AppState.offset === 0) {
+      AppState.hasPrevious = true
+    } else {
+      AppState.hasPrevious = false
+    }
+  }
 
+  async getFavoriteRecipes(query) {
+    AppState.recipes = []
+    const res = await api.get("account/favorites", { params: query })
+    AppState.recipes = res.data.map(data => new Recipe(data))
+    this.setNext()
+    this.setPrevious()
+  }
+
+  async getMyRecipes(query) {
+    AppState.recipes = []
+    const res = await api.get("account/recipes", { params: query })
+    AppState.recipes = res.data.map(data => new Recipe(data))
+    this.setNext()
+    this.setPrevious()
   }
 
   async toggleFavorite(recipeId) {
@@ -72,6 +88,28 @@ class RecipesService {
     const res = await api.delete(`api/recipes/${recipeId}`)
     AppState.recipes = AppState.recipes.filter(recipe => recipe.id !== recipeId)
     AppState.favRecipes = AppState.favRecipes.filter(recipe => recipe.id !== recipeId)
+  }
+
+  async changePage(direction, page) {
+    if (direction === AppState.next) {
+      AppState.offset += AppState.limit
+    }
+
+    if (direction === AppState.previous && AppState.offset !== 0) {
+      AppState.offset -= AppState.limit
+    }
+
+    switch(page) {
+      case "Home":
+        this.getAllRecipes({ search: AppState.search, offset: AppState.offset, limit: AppState.limit })
+        break;
+      case "Favorites":
+        this.getFavoriteRecipes({ search: AppState.search, offset: AppState.offset, limit: AppState.limit })
+        break;
+      case "MyRecipes":
+        this.getMyRecipes({ search: AppState.search, offset: AppState.offset, limit: AppState.limit })
+        break;
+      }
   }
 }
 

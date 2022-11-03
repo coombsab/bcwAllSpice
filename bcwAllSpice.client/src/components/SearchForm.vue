@@ -9,6 +9,7 @@
 
 <script>
 import { ref } from "vue";
+import { recipesService } from "../services/RecipesService";
 import { searchService } from "../services/SearchService.js";
 
 export default {
@@ -21,6 +22,7 @@ export default {
           editable.value.search = ""
         }
         searchService.saveSearch(editable.value.search)
+        recipesService.getAllRecipes({ search: editable.value.search })
       }
     }
   }
@@ -28,5 +30,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  
+
 </style>

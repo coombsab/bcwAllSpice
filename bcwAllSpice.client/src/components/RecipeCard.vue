@@ -114,17 +114,18 @@ export default {
 }
 
 .fadeIn {
-    animation: fadeIn ease 0.5s;
+  animation: fadeIn ease 0.5s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
   }
 
-  @keyframes fadeIn {
-    0% {
-      opacity:0;
-    }
-    100% {
-      opacity:1;
-    }
+  100% {
+    opacity: 1;
   }
+}
 
 @media (min-width: 768px) {
   .recipe-card {
@@ -134,6 +135,11 @@ export default {
     background-size: cover;
     border-radius: 0.5rem;
     position: relative;
+    transition: 0.15s linear;
+  }
+
+  .recipe-card:hover {
+    transform: scale(1.05);
   }
 }
 </style>

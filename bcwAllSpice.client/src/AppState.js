@@ -12,6 +12,12 @@ export const AppState = reactive({
   /** @type {import('./models/Ingredient.js').Ingredient[]} */
   ingredients: [],
   search: "",
+  offset: 0,
+  limit: 18,
+  hasPrevious: false,
+  hasNext: false,
+  next: "next",
+  previous: "previous",
   isEditTitleVisible: false,
   isEditSubtitleVisible: false,
   isEditImageVisible: false,

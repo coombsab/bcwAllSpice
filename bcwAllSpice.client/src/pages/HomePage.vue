@@ -4,11 +4,11 @@
       <RecipeCard v-for="r in recipes" :key="r.id" :recipe="r" />
     </div>
     <div class="d-flex flex-column flex-grow-1 pos-relative" v-else>
-      <span class="fadeIn m-auto fs-1 fw-700 px-5">No recipes currently available, refresh the page (server may have timed out) or add some, please!</span>
+      <span class="fadeIn m-auto fs-1 fw-700 px-5">No recipes currently available, refresh the page (server may have
+        timed out) or add some, please!</span>
       <Spinner />
     </div>
   </section>
-  <div id="modals"></div>
 </template>
 
 <script>
@@ -21,29 +21,23 @@ import { recipesService } from "../services/RecipesService.js"
 import Pop from "../utils/Pop";
 
 export default {
-    setup() {
-        async function getAllRecipes() {
-            try {
-                await recipesService.getAllRecipes();
-            }
-            catch (error) {
-                Pop.error(error.message, "[getAllRecipes]");
-            }
-        }
-        onMounted(() => {
-            getAllRecipes();
-        });
-        return {
-            recipes: computed(() => {
-              const filterByCategory = AppState.recipes.filter(recipe => recipe.category.toUpperCase().includes(AppState.search.toUpperCase()))
-              const filterByTitle = AppState.recipes.filter(recipe => recipe.title.toUpperCase().includes(AppState.search.toUpperCase()))
-              const filterBySubtitle = AppState.recipes.filter(recipe => recipe.subtitle.toUpperCase().includes(AppState.search.toUpperCase()))
-              const finalSearchFilter = [...new Set([...filterByCategory, ...filterByTitle, ...filterBySubtitle])]
-              return finalSearchFilter
-            })
-        };
-    },
-    components: { RecipeCard, Spinner }
+  setup() {
+    async function getAllRecipes() {
+      try {
+        await recipesService.getAllRecipes();
+      }
+      catch (error) {
+        Pop.error(error.message, "[getAllRecipes]");
+      }
+    }
+    onMounted(() => {
+      getAllRecipes();
+    });
+    return {
+      recipes: computed(() => AppState.recipes)
+    };
+  },
+  components: { RecipeCard, Spinner }
 }
 </script>
 
@@ -51,30 +45,33 @@ export default {
 .pos-relative {
   position: relative;
 }
-  .home {
-    display: flex;
-    flex-direction: column;
-    height: 80vh;
+
+.home {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+}
+
+.home-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.fadeIn {
+  animation: fadeIn ease 11s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
   }
 
-  .home-content {
-    flex-grow: 1;
-    overflow-y: auto;
-  }
-  
-  .fadeIn {
-    animation: fadeIn ease 11s;
+  75% {
+    opacity: 0;
   }
 
-  @keyframes fadeIn {
-    0% {
-      opacity:0;
-    }
-    75% {
-      opacity: 0;
-    }
-    100% {
-      opacity:1;
-    }
+  100% {
+    opacity: 1;
   }
+}
 </style>
