@@ -3,8 +3,9 @@
     <div class="my-recipes-content d-flex flex-wrap gap-3 px-3 justify-content-evenly py-5 mt-5" v-if="recipes.length > 0">
       <RecipeCard v-for="r in recipes" :key="r.id" :recipe="r" />
     </div>
-    <div class="d-flex flex-column flex-grow-1" v-else>
-      <span class="fadeIn m-auto fs-1 fw-700">Sorry, you have no recipes, please add some!</span>
+    <div class="d-flex flex-column flex-grow-1 pos-relative" v-else>
+      <span class="fadeIn m-auto fs-1 fw-700 px-5">Either the server timed out or you have no recipes.  Please add some recipes!</span>
+      <Spinner />
     </div>
   </section>
 </template>
@@ -57,7 +58,7 @@ export default {
   }
   
 .fadeIn {
-  animation: fadeIn ease 8s;
+  animation: fadeIn ease 9s;
 }
 
 @keyframes fadeIn {

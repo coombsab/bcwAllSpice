@@ -61,10 +61,12 @@
                       </form>
                     </div>
                   </div>
-                  <h6 v-show="!isEditSubtitleVisible">{{ recipe.subtitle === "" ? 'Add subtitle' : recipe.subtitle }} <span v-if="recipe.creatorId === account.id"><i
-                      class="mdi mdi-square-edit-outline selectable" title="Edit Subtitle" v-if="recipe.subtitle !== ''"
-                      @click="toggleVisibility('subtitleForm')"></i><i class="mdi mdi-plus-outline selectable"
-                      title="Add Subtitle" @click="toggleVisibility('subtitleForm')" v-else></i></span></h6>
+                  <h6 v-show="!isEditSubtitleVisible">{{ recipe.subtitle === "" ? 'Add subtitle' : recipe.subtitle }}
+                    <span v-if="recipe.creatorId === account.id"><i class="mdi mdi-square-edit-outline selectable"
+                        title="Edit Subtitle" v-if="recipe.subtitle !== ''"
+                        @click="toggleVisibility('subtitleForm')"></i><i class="mdi mdi-plus-outline selectable"
+                        title="Add Subtitle" @click="toggleVisibility('subtitleForm')" v-else></i></span>
+                  </h6>
                   <form @submit.prevent="editRecipe('subtitleForm')" id="subtitleForm" v-show="isEditSubtitleVisible">
                     <div class="form-floating">
                       <input type="text" id="editSubtitle" class="form-control" placeholder="Edit Subtitle"
@@ -81,10 +83,11 @@
                   <div class="flex-grow-1 auto-scroll pt-3" v-show="!isEditInstructionsVisible"><span>{{
                       !recipe.instructions ? "Add instructions" :
                         recipe.instructions
-                  }}</span> <span v-if="recipe.creatorId === account.id"><i class="mdi mdi-square-edit-outline selectable" title="Edit Instructions"
-                      v-if="recipe.instructions" @click="toggleVisibility('instructionsForm')"></i><i
-                      class="mdi mdi-plus-outline selectable" title="Add Instructions"
-                      @click="toggleVisibility('instructionsForm')" v-else></i></span>
+                  }}</span> <span v-if="recipe.creatorId === account.id"><i
+                        class="mdi mdi-square-edit-outline selectable" title="Edit Instructions"
+                        v-if="recipe.instructions" @click="toggleVisibility('instructionsForm')"></i><i
+                        class="mdi mdi-plus-outline selectable" title="Add Instructions"
+                        @click="toggleVisibility('instructionsForm')" v-else></i></span>
                   </div>
                   <form @submit.prevent="editRecipe('instructionsForm')" id="instructionsForm"
                     v-show="isEditInstructionsVisible">
@@ -108,7 +111,8 @@
               </div>
               <div class="w-100">
                 <div class="d-flex justify-content-between align-items-center">
-                  <button type="button" class="btn btn-danger" @click="deleteRecipe()" v-if="recipe.creatorId === account.id">Delete Recipe</button>
+                  <button type="button" class="btn btn-danger" @click="deleteRecipe()"
+                    v-if="recipe.creatorId === account.id">Delete Recipe</button>
                   <div v-else></div>
                   <span class="text-end">created by {{ recipe.creator.name }}</span>
                 </div>
@@ -124,7 +128,7 @@
 <script>
 import { computed } from "@vue/reactivity";
 import { Modal } from "bootstrap";
-import { ref, onMounted, watchEffect } from "vue";
+import { ref, onMounted, watchEffect, Teleport } from "vue";
 import { useRoute } from "vue-router";
 import { AppState } from "../AppState";
 import { Recipe } from "../models/Recipe";
@@ -225,7 +229,7 @@ export default {
       }
     };
   },
-  components: { IngredientCard }
+  components: { IngredientCard, Teleport }
 }
 </script>
 

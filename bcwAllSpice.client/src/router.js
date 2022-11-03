@@ -14,7 +14,7 @@ const routes = [
       {
         path: '/:recipeId',
         name: 'RecipeDetails',
-        component: 'RecipeDetailsModal'
+        component: () => import("./components/RecipeDetailsModal.vue")
       }
     ]
   },

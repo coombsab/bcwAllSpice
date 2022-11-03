@@ -1,5 +1,5 @@
 <template>
-  <div class="recipe-card text-visible elevation-2 mb-3" :style="{ backgroundImage: `url(${recipe?.img})` }">
+  <div class="recipe-card text-visible elevation-2 mb-3 fadeIn" :style="{ backgroundImage: `url(${recipe?.img})` }">
     <div class="layer selectable p-3" title="Recipe Details" data-bs-toggle="modal"
       :data-bs-target="'#recipeDetailsModal' + recipe.id" @click="getIngredientsByRecipeId()">
       <div class="card-content">
@@ -112,6 +112,19 @@ export default {
   height: 100%;
   justify-content: space-between;
 }
+
+.fadeIn {
+    animation: fadeIn ease 0.5s;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity:0;
+    }
+    100% {
+      opacity:1;
+    }
+  }
 
 @media (min-width: 768px) {
   .recipe-card {
