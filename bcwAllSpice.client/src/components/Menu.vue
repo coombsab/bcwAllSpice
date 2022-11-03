@@ -57,7 +57,7 @@ export default {
   }
 
 span {
-  color: red;
+  color: rgb(147, 33, 33);
   user-select: none;
   transition: 0.3s ease-in-out;
 }
