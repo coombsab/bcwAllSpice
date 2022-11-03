@@ -35,11 +35,11 @@ public class RecipesController : ControllerBase
   }
 
   [HttpGet]
-  public ActionResult<List<Recipe>> GetAllRecipes([FromQuery] string offset, [FromQuery] string limit)
+  public ActionResult<List<Recipe>> GetAllRecipes([FromQuery] string offset, [FromQuery] string limit, [FromQuery] string search)
   {
     try
     {
-      List<Recipe> recipes = _recipesService.GetAllRecipes(offset, limit);
+      List<Recipe> recipes = _recipesService.GetAllRecipes(offset, limit, search);
       return Ok(recipes);
     }
     catch (Exception e)

@@ -16,20 +16,25 @@ public class RecipesRepository : RepositoryBase
     recipeData.Id = _db.ExecuteScalar<int>(sql, recipeData);
     return GetRecipeById(recipeData.Id);
   }
-  public List<Recipe> GetAllRecipes(int offset, int limit)
+  public List<Recipe> GetAllRecipes(int offset, int limit, string search)
   {
+
+    search = $"%{search}%";
     string sql = @"
-    SELECT rec.*, acc.* FROM recipes rec
-    JOIN accounts acc ON acc.id = rec.creatorId
-    ORDER by rec.updatedAt DESC
-    LIMIT @limit
-    OFFSET @offset;
+      SELECT rec.*, acc.* FROM recipes rec
+      JOIN accounts acc ON acc.id = rec.creatorId
+      WHERE LOWER (rec.title) LIKE @search OR LOWER (rec.subtitle) LIKE @search OR LOWER (rec.category) LIKE @search
+      ORDER by rec.updatedAt DESC
+      LIMIT @limit
+      OFFSET @offset;
     ";
-    List<Recipe> recipes = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) =>
+    List<Recipe> unfilteredRecipes = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) =>
     {
       recipe.Creator = profile;
       return recipe;
-    }, new { offset, limit }).ToList();
+    }, new { offset, limit, search }).ToList();
+
+    List<Recipe> recipes = unfilteredRecipes.Distinct().ToList();
 
     sql = @"
       SELECT acc.* FROM favorites fav
@@ -65,14 +70,14 @@ public class RecipesRepository : RepositoryBase
     // ";
 
     // List<Recipe> recipes = _db.Query<Recipe>(sql, new { accountId }).ToList();
-    
+
     string sql = @"
-    SELECT rec.*, acc.* FROM recipes rec
-    JOIN accounts acc ON acc.id = rec.creatorId
-    WHERE rec.creatorId = @accountId
-    ORDER by rec.updatedAt DESC
-    LIMIT @limit
-    OFFSET @offset;
+      SELECT rec.*, acc.* FROM recipes rec
+      JOIN accounts acc ON acc.id = rec.creatorId
+      WHERE rec.creatorId = @accountId
+      ORDER by rec.updatedAt DESC
+      LIMIT @limit
+      OFFSET @offset;
     ";
     List<Recipe> recipes = _db.Query<Recipe, Profile, Recipe>(sql, (recipe, profile) =>
     {

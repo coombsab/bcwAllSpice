@@ -4,7 +4,7 @@ public class RecipesService {
   private readonly RecipesRepository _recipesRepository;
 
   private const int OFFSET_DEFAULT = 0;
-  private const int LIMIT_DEFAULT = 100;
+  private const int LIMIT_DEFAULT = 18;
 
   public RecipesService(RecipesRepository recipesRepository)
   {
@@ -16,7 +16,7 @@ public class RecipesService {
     return _recipesRepository.CreateRecipe(recipeData);
   }
 
-  public List<Recipe> GetAllRecipes(string offsetStr, string limitStr) {
+  public List<Recipe> GetAllRecipes(string offsetStr, string limitStr, string search) {
     int offset = OFFSET_DEFAULT, limit = LIMIT_DEFAULT;
     if (offsetStr != null) {
       offset = int.Parse(offsetStr);
@@ -25,7 +25,12 @@ public class RecipesService {
     if (limitStr != null) {
       limit = int.Parse(limitStr);
     }
-    return _recipesRepository.GetAllRecipes(offset, limit);
+
+    if (search != null) {
+      search = search.ToLower();
+    }
+
+    return _recipesRepository.GetAllRecipes(offset, limit, search);
   }
 
   public Recipe GetRecipeById(int recipeId) {

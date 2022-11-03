@@ -87,3 +87,10 @@ SELECT * FROM recipes
 WHERE creatorId = "633cafd74ce51ed030ce6d38";
 
 ALTER TABLE accounts MODIFY picture MEDIUMTEXT;
+
+SELECT rec.*, acc.* FROM recipes rec
+      JOIN accounts acc ON acc.id = rec.creatorId
+      WHERE LOWER (rec.title) LIKE LOWER('%cats%') OR LOWER (rec.subtitle) LIKE LOWER('%cats%') OR LOWER (rec.category) LIKE LOWER ('%cats%')
+      ORDER by rec.updatedAt DESC
+      LIMIT 1000
+      OFFSET 0;
