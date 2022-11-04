@@ -9,12 +9,14 @@
 
 <script>
 import { ref } from "vue";
+import { useRoute } from "vue-router";
 import { recipesService } from "../services/RecipesService";
 import { searchService } from "../services/SearchService.js";
 
 export default {
   setup() {
     const editable = ref({})
+    const route = useRoute()
     return {
       editable,
       handleSubmit() {
@@ -22,7 +24,17 @@ export default {
           editable.value.search = ""
         }
         searchService.saveSearch(editable.value.search)
-        recipesService.getAllRecipes({ search: editable.value.search })
+        switch(route.name) {
+          case "Home":
+            recipesService.getAllRecipes({ search: editable.value.search })
+            break;
+          case "MyRecipes":
+            recipesService.getMyRecipes({ search: editable.value.search })
+            break;
+          case "Favorites":
+            recipesService.getFavoriteRecipes({ search: editable.value.search })
+            break;
+        }
       }
     }
   }
